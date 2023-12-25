@@ -19,7 +19,7 @@
    - [Usage in Non-EC2 Instances (Local Development)](#usage-in-non-ec2-instances-local-development)
    - [Usage in EC2 Instances](#usage-in-ec2-instances)
    - [Security Best Practices](#security-best-practices)
-   - [DefaultAWSCredentialsProviderChain in .NET AWS SDK](#defaultawscredentialsproviderchain-in-net-aws-sdk)
+7. [DefaultAWSCredentialsProviderChain in .NET AWS SDK](#defaultawscredentialsproviderchain-in-net-aws-sdk)
 
 # IAM Roles vs. AWS Security Token Service (STS)
 
