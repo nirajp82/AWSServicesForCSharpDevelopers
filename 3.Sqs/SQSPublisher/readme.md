@@ -1,11 +1,10 @@
 This project uses IAM roles in a project, both on non-EC2 instances (local development) and EC2 instances.
 
-```markdown
-#Use IAM roles for applications and AWS services which require Amazon SQS access
+# Use IAM roles for applications and AWS services which require Amazon SQS access
+
 For applications or AWS services such as Amazon EC2 to access Amazon SQS queues, they must use valid AWS credentials in their AWS API requests. Because these credentials aren't rotated automatically, you shouldn't store AWS credentials directly in the application or EC2 instance.
 
 You should use an IAM role to manage temporary credentials for applications or services that need to access Amazon SQS. When you use a role, you don't have to distribute long-term credentials (such as a username, password, and access keys) to an EC2 instance or AWS service such as AWS Lambda. Instead, the role supplies temporary permissions that applications can use when they make calls to other AWS resources.
-
 
 # IAM Role Usage Guide
 
@@ -71,7 +70,3 @@ When running your application on an EC2 instance, IAM roles can be associated wi
 - Use IAM roles for EC2 instances to automatically manage temporary credentials.
 
 **Note:** Ensure that your IAM roles have the necessary permissions for the specific AWS services your application uses.
-
-```
-
-Feel free to modify the content based on your specific project needs and include additional details as necessary.
