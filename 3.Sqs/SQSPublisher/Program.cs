@@ -17,7 +17,7 @@ async Task SendMessageUsingCLIConfiguredCredentialsAsync()
         var sendMessageRequest = new SendMessageRequest
         {
             QueueUrl = queueUrlResponse.QueueUrl,
-            MessageBody = JsonSerializer.Serialize(Create())
+            MessageBody = JsonSerializer.Serialize(Customer.Create())
         };
 
         try
@@ -31,16 +31,4 @@ async Task SendMessageUsingCLIConfiguredCredentialsAsync()
             Console.WriteLine($"Error publishing message: {ex.Message}");
         }
     }
-}
-
-CustomerCreated Create()
-{
-    return new CustomerCreated
-    {
-        Id = Guid.NewGuid(),
-        Email = "John.Doe@email.com",
-        FullName = "John Doe",
-        DateOfBirth = new DateTime(1900, 1, 1),
-        GithubUserName = "nirajp82"
-    };
 }
