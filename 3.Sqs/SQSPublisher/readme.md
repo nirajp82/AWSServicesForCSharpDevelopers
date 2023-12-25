@@ -1,5 +1,3 @@
-This project uses IAM roles in a project, both on non-EC2 instances (local development) and EC2 instances.
-
 # Use IAM roles for applications and AWS services which require Amazon SQS access
 
 For applications or AWS services such as Amazon EC2 to access Amazon SQS queues, they must use valid AWS credentials in their AWS API requests. Because these credentials aren't rotated automatically, you shouldn't store AWS credentials directly in the application or EC2 instance.
