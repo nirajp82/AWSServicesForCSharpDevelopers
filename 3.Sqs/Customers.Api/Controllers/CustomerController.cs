@@ -16,11 +16,11 @@ public class CustomerController : ControllerBase
     }
 
     [HttpPost("customers")]
-    public async Task<IActionResult> Create([FromBody] CustomerRequest request)
+    public async Task<IActionResult> Create([FromBody] CustomerRequest request, CancellationToken cts)
     {
         var customer = request.ToCustomer();
 
-        await _customerService.CreateAsync(customer);
+        await _customerService.CreateAsync(customer, cts);
 
         var customerResponse = customer.ToCustomerResponse();
 
@@ -40,7 +40,7 @@ public class CustomerController : ControllerBase
         var customerResponse = customer.ToCustomerResponse();
         return Ok(customerResponse);
     }
-    
+
     [HttpGet("customers")]
     public async Task<IActionResult> GetAll()
     {
@@ -48,10 +48,9 @@ public class CustomerController : ControllerBase
         var customersResponse = customers.ToCustomersResponse();
         return Ok(customersResponse);
     }
-    
+
     [HttpPut("customers/{id:guid}")]
-    public async Task<IActionResult> Update(
-        [FromMultiSource] UpdateCustomerRequest request)
+    public async Task<IActionResult> Update([FromMultiSource] UpdateCustomerRequest request, CancellationToken cts)
     {
         var existingCustomer = await _customerService.GetAsync(request.Id);
 
@@ -61,21 +60,20 @@ public class CustomerController : ControllerBase
         }
 
         var customer = request.ToCustomer();
-        await _customerService.UpdateAsync(customer);
+        await _customerService.UpdateAsync(customer, cts);
 
         var customerResponse = customer.ToCustomerResponse();
         return Ok(customerResponse);
     }
-    
+
     [HttpDelete("customers/{id:guid}")]
-    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cts)
     {
-        var deleted = await _customerService.DeleteAsync(id);
+        var deleted = await _customerService.DeleteAsync(id, cts);
         if (!deleted)
         {
             return NotFound();
         }
-
         return Ok();
     }
 }
