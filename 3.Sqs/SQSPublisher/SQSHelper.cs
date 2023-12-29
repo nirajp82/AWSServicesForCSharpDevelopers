@@ -11,17 +11,17 @@ namespace SQSPublisher
 {
     internal class SQSHelper
     {
-        internal static async Task Publish(AmazonSQSClient sqsClient)
+        internal static async Task PublishAsync(AmazonSQSClient sqsClient, string source, CancellationToken cts)
         {
             string queueName = "customers";
             // Get the URL of the specified queue
-            var queueUrlResponse = await sqsClient.GetQueueUrlAsync(queueName);
+            var queueUrlResponse = await sqsClient.GetQueueUrlAsync(queueName, cts);
 
             // Build the request to send the message
             var sendMessageRequest = new SendMessageRequest
             {
                 QueueUrl = queueUrlResponse.QueueUrl,
-                MessageBody = JsonSerializer.Serialize(Customer.Create()),
+                MessageBody = JsonSerializer.Serialize(Customer.Create(source)),
                 MessageAttributes = new Dictionary<string, MessageAttributeValue>
                 {
                     {
@@ -37,7 +37,7 @@ namespace SQSPublisher
             try
             {
                 // Send the message to the SQS queue
-                var response = await sqsClient.SendMessageAsync(sendMessageRequest);
+                var response = await sqsClient.SendMessageAsync(sendMessageRequest, cts);
                 Console.WriteLine($"Message sent with ID: {response.MessageId}");
             }
             catch (Exception ex)

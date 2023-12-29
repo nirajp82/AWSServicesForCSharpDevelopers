@@ -11,15 +11,13 @@ namespace SQSPublisher
 {
     internal class SQSPublisherUsingSTS
     {
-        internal static async Task Publish()
+        internal static async Task PublishAsync(CancellationToken cts)
         {
             try
             {
-                AWSCredentials tempCredentials = await STSHelper.GetSTSTempCredentials();
-                using (var sqsClient = new AmazonSQSClient(tempCredentials))
-                {
-                    await SQSHelper.Publish(sqsClient);
-                }
+                AWSCredentials tempCredentials = await STSHelper.GetSTSTempCredentialsAsync(cts);
+                using var sqsClient = new AmazonSQSClient(tempCredentials);
+                await SQSHelper.PublishAsync(sqsClient, "STS", cts);
             }
             catch (Exception ex)
             {

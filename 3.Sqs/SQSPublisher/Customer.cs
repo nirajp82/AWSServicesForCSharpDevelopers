@@ -14,14 +14,14 @@ namespace SQSPublisher
         public required string GithubUserName { get; init; }
         public required DateTime DateOfBirth { get; init; }
 
-        internal static Customer Create() 
+        internal static Customer Create(string source)
         {
             return new Customer
             {
                 Id = Guid.NewGuid(),
-                Email = "John.Doe@email.com",
-                FullName = "John Doe",
-                DateOfBirth = new DateTime(1900, 1, 1),
+                Email = $"John.Doe.{source}@email.com",
+                FullName = $"John Doe - {source}",
+                DateOfBirth = DateTime.Now.Date.AddDays(DateTime.Now.Millisecond * -1),
                 GithubUserName = "nirajp82"
             };
         }

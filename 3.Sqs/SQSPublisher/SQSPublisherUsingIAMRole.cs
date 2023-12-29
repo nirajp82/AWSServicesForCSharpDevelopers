@@ -17,12 +17,10 @@ namespace SQSPublisher
         /// shared credentials file, and IAM roles associated with an EC2 instance (if applicable).
         /// </summary>
         /// <returns></returns>
-        internal static async Task Publish()
+        internal static async Task PublishAsync(CancellationToken cts)
         {
-            using (var sqsClient = new AmazonSQSClient())
-            {
-                await SQSHelper.Publish(sqsClient);
-            }
+            using var sqsClient = new AmazonSQSClient();
+            await SQSHelper.PublishAsync(sqsClient, "Role", cts);
         }
     }
 }
