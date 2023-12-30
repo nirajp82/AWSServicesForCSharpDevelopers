@@ -1,0 +1,4 @@
+@Customer.Consumer.Api_HostAddress = http://localhost:5070
+
+GET {{Customer.Consumer.Api_HostAddress}}/
+Accept: application/json
