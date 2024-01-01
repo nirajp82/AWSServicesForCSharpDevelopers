@@ -14,6 +14,7 @@ namespace Customer.Consumer.Api.Handlers
 
         public Task Handle(CustomerCreated request, CancellationToken cancellationToken)
         {
+            //throw new Exception("Throw exception so I can go to dead letter queue!");
             _logger.LogInformation($"CustomerCreated: {request.FullName}");
             return Unit.Task;
         }
