@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace Customer.Consumer.Api
+﻿namespace Customer.Publisher.Api.Messaging
 {
     public class QueueSettings
     {
         public const string Key = "Queue";
         public required string Name { get; init; }
-        public required int PollingPeriod { get; init; }
     }
 }

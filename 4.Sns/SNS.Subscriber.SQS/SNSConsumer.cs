@@ -5,20 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
-namespace SQSConsumer
+namespace SNS.Subscriber.SQS
 {
-    internal class SQSConsumerUsingIAMRole
+    internal class SNSConsumer
     {
-        public static async Task ConsumeAsync(CancellationToken cts)
+        public static async Task ConsumeAsync(string queueName, CancellationToken cts)
         {
-            using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(3000));
-
-            // Specify the name of the Amazon Simple Queue Service (SQS) queue
-            string queueName = "customers";
-
             using var sqsClient = new AmazonSQSClient();
+            using PeriodicTimer timer = new(TimeSpan.FromSeconds(3000));
 
             // Retrieve the URL of the specified queue
             var queueUrlResponse = await sqsClient.GetQueueUrlAsync(queueName);
@@ -40,7 +35,7 @@ namespace SQSConsumer
                 // Receive messages from the queue
                 var response = await sqsClient.ReceiveMessageAsync(receiveMessageRequest, cts);
 
-                Console.WriteLine($"Total received messages using IAMRole: {response.Messages.Count}");
+                Console.WriteLine($"Total received messages: {response.Messages.Count}, QueueName:{queueName}");
 
                 foreach (var message in response.Messages)
                 {

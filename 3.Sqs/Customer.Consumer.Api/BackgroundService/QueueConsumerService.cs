@@ -18,18 +18,22 @@ namespace Customer.Consumer.Api
         private readonly QueueSettings _queueSettings;
         private readonly IMediator _mediator;
         private readonly ILogger<QueueConsumerService> _logger;
+        public readonly TimeSpan _period;
 
-        public QueueConsumerService(IAmazonSQS amazonSQS, IMediator mediator, ILogger<QueueConsumerService> logger, IOptions<QueueSettings> queueSettings)
+        public QueueConsumerService(IAmazonSQS amazonSQS, IMediator mediator, ILogger<QueueConsumerService> logger,
+                IOptions<QueueSettings> queueSettings)
         {
             _amazonSQS = amazonSQS;
             _mediator = mediator;
             _logger = logger;
             _queueSettings = queueSettings.Value;
+            _period = TimeSpan.FromSeconds(_queueSettings.PollingPeriod);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            using PeriodicTimer timer = new PeriodicTimer(_period);
+            while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
             {
                 // Retrieve the URL of the specified queue
                 var queueUrlResponse = await _amazonSQS.GetQueueUrlAsync(_queueSettings.Name, stoppingToken);
@@ -70,7 +74,6 @@ namespace Customer.Consumer.Api
                         await _amazonSQS.DeleteMessageAsync(queueUrlResponse.QueueUrl, message.ReceiptHandle, stoppingToken);
                     }
                 }
-                await Task.Delay(3000, stoppingToken);
             }
         }
 
