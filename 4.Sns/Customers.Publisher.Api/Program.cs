@@ -1,10 +1,11 @@
-using Amazon.SQS;
+using Amazon.SimpleNotificationService;
 using Customers.Publisher.Api.Database;
 using Customers.Publisher.Api.Messaging;
 using Customers.Publisher.Api.Repositories;
 using Customers.Publisher.Api.Services;
 using Customers.Publisher.Api.Validation;
 using Dapper;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Net.Http.Headers;
 
@@ -17,11 +18,16 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 var config = builder.Configuration;
 config.AddEnvironmentVariables("CustomersApi_");
 
-builder.Services.AddControllers().AddFluentValidation(x =>
-{
-    x.RegisterValidatorsFromAssemblyContaining<Program>();
-    x.DisableDataAnnotationsValidation = true;
-});
+//builder.Services.AddControllers().AddFluentValidation(x =>
+//{
+//    x.RegisterValidatorsFromAssemblyContaining<Program>();
+//    x.DisableDataAnnotationsValidation = true;
+//});
+builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -33,9 +39,9 @@ builder.Services.AddSingleton<IDbConnectionFactory>(_ =>
     new SqliteConnectionFactory(config.GetValue<string>("Database:ConnectionString")!));
 builder.Services.AddSingleton<DatabaseInitializer>();
 
-builder.Services.Configure<QueueSettings>(builder.Configuration.GetSection(QueueSettings.Key));
-builder.Services.AddSingleton<IAmazonSQS, AmazonSQSClient>();
-builder.Services.AddSingleton<ISqsMessenger, SqsMessenger>();
+builder.Services.Configure<TopicSettings>(builder.Configuration.GetSection(TopicSettings.Key));
+builder.Services.AddSingleton<IAmazonSimpleNotificationService, AmazonSimpleNotificationServiceClient>();
+builder.Services.AddSingleton<ISnsMessanger, SnsMessanger>();
 
 builder.Services.AddSingleton<ICustomerRepository, CustomerRepository>();
 builder.Services.AddSingleton<ICustomerService, CustomerService>();
@@ -59,7 +65,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
+//app.UseAuthorization();
 app.UseMiddleware<ValidationExceptionMiddleware>();
 app.MapControllers();
 

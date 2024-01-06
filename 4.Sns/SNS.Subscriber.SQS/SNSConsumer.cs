@@ -13,7 +13,7 @@ namespace SNS.Subscriber.SQS
         public static async Task ConsumeAsync(string queueName, CancellationToken cts)
         {
             using var sqsClient = new AmazonSQSClient();
-            using PeriodicTimer timer = new(TimeSpan.FromSeconds(3000));
+            using PeriodicTimer timer = new(TimeSpan.FromSeconds(3));
 
             // Retrieve the URL of the specified queue
             var queueUrlResponse = await sqsClient.GetQueueUrlAsync(queueName);
@@ -49,6 +49,7 @@ namespace SNS.Subscriber.SQS
                     await sqsClient.DeleteMessageAsync(queueUrlResponse.QueueUrl, message.ReceiptHandle, cts);
                 }
             }
+            Console.WriteLine($"Done. IsCancellationRequested:{cts.IsCancellationRequested}");
         }
     }
 }

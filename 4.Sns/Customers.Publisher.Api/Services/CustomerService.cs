@@ -5,6 +5,7 @@ using Customers.Publisher.Api.Messaging;
 using Customers.Publisher.Api.Repositories;
 using FluentValidation;
 using FluentValidation.Results;
+using System.Threading;
 
 namespace Customers.Publisher.Api.Services;
 
@@ -12,17 +13,17 @@ public class CustomerService : ICustomerService
 {
     private readonly ICustomerRepository _customerRepository;
     private readonly IGitHubService _gitHubService;
-    private readonly ISqsMessenger _sqsMessenger;
+    private readonly ISnsMessanger _snsMessenger;
 
-    public CustomerService(ICustomerRepository customerRepository, 
-        IGitHubService gitHubService, ISqsMessenger sqsMessenger)
+    public CustomerService(ICustomerRepository customerRepository,
+        IGitHubService gitHubService, ISnsMessanger sqsMessenger)
     {
         _customerRepository = customerRepository;
         _gitHubService = gitHubService;
-        _sqsMessenger = sqsMessenger;
+        _snsMessenger = sqsMessenger;
     }
 
-    public async Task<bool> CreateAsync(Customer customer)
+    public async Task<bool> CreateAsync(Customer customer, CancellationToken cancellationToken)
     {
         var existingUser = await _customerRepository.GetAsync(customer.Id);
         if (existingUser is not null)
@@ -42,7 +43,7 @@ public class CustomerService : ICustomerService
         var response = await _customerRepository.CreateAsync(customerDto);
         if (response)
         {
-            await _sqsMessenger.SendMessageAsync(customer.ToCustomerCreatedMessage());
+            await _snsMessenger.PublishAsync(customer.ToCustomerCreatedMessage(), cancellationToken);
         }
 
         return response;
@@ -60,7 +61,7 @@ public class CustomerService : ICustomerService
         return customerDtos.Select(x => x.ToCustomer());
     }
 
-    public async Task<bool> UpdateAsync(Customer customer)
+    public async Task<bool> UpdateAsync(Customer customer, CancellationToken cancellationToken)
     {
         var customerDto = customer.ToCustomerDto();
         
@@ -74,21 +75,21 @@ public class CustomerService : ICustomerService
         var response = await _customerRepository.UpdateAsync(customerDto);
         if (response)
         {
-            await _sqsMessenger.SendMessageAsync(customer.ToCustomerUpdatedMessage());
+            await _snsMessenger.PublishAsync(customer.ToCustomerUpdatedMessage(), cancellationToken);
         }
 
         return response;
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         var response = await _customerRepository.DeleteAsync(id);
         if (response)
         {
-            await _sqsMessenger.SendMessageAsync(new CustomerDeleted
+            await _snsMessenger.PublishAsync(new CustomerDeleted
             {
                 Id = id
-            });
+            }, cancellationToken);
         }
 
         return response;

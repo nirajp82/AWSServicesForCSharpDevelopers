@@ -16,11 +16,11 @@ public class CustomerController : ControllerBase
     }
 
     [HttpPost("customers")]
-    public async Task<IActionResult> Create([FromBody] CustomerRequest request)
+    public async Task<IActionResult> Create([FromBody] CustomerRequest request, CancellationToken cancellationToken)
     {
         var customer = request.ToCustomer();
 
-        await _customerService.CreateAsync(customer);
+        await _customerService.CreateAsync(customer, cancellationToken);
 
         var customerResponse = customer.ToCustomerResponse();
 
@@ -51,7 +51,7 @@ public class CustomerController : ControllerBase
     
     [HttpPut("customers/{id:guid}")]
     public async Task<IActionResult> Update(
-        [FromMultiSource] UpdateCustomerRequest request)
+        [FromMultiSource] UpdateCustomerRequest request, CancellationToken cancellationToken)
     {
         var existingCustomer = await _customerService.GetAsync(request.Id);
 
@@ -61,16 +61,16 @@ public class CustomerController : ControllerBase
         }
 
         var customer = request.ToCustomer();
-        await _customerService.UpdateAsync(customer);
+        await _customerService.UpdateAsync(customer, cancellationToken);
 
         var customerResponse = customer.ToCustomerResponse();
         return Ok(customerResponse);
     }
     
     [HttpDelete("customers/{id:guid}")]
-    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var deleted = await _customerService.DeleteAsync(id);
+        var deleted = await _customerService.DeleteAsync(id, cancellationToken);
         if (!deleted)
         {
             return NotFound();
