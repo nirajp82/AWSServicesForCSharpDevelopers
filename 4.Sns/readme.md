@@ -19,8 +19,16 @@ Let's break down the concepts you mentioned and provide examples using the AWS .
          Message = "Hello, world!",
      });
      ```
-
-2. **PubSub (Publish-Subscribe):**
+2. **Topic:**
+   - **Description:** A topic is a communication channel to which messages can be published. Subscribers who are interested in a specific topic can receive and process messages published to that topic.
+   - **Example (.NET SDK):**
+     ```csharp
+     // Create a topic
+     var createTopicResponse = snsClient.CreateTopic(new CreateTopicRequest { Name = "MyTopic" });
+     string topicArn = createTopicResponse.TopicArn;
+     ```
+     
+3. **PubSub (Publish-Subscribe):**
    - **Description:** PubSub is a messaging pattern where senders of messages, called publishers, do not program the messages directly to specific receivers, called subscribers. Instead, messages are published to topics, and subscribers express interest in one or more topics.
    - **Example (.NET SDK):**
      ```csharp
@@ -31,15 +39,6 @@ Let's break down the concepts you mentioned and provide examples using the AWS .
          Endpoint = "example@email.com",
          TopicArn = topicArn,
      });
-     ```
-
-3. **Topic:**
-   - **Description:** A topic is a communication channel to which messages can be published. Subscribers who are interested in a specific topic can receive and process messages published to that topic.
-   - **Example (.NET SDK):**
-     ```csharp
-     // Create a topic
-     var createTopicResponse = snsClient.CreateTopic(new CreateTopicRequest { Name = "MyTopic" });
-     string topicArn = createTopicResponse.TopicArn;
      ```
 
 4. **Possible Subscribers of SNS:**
