@@ -7,7 +7,6 @@ public class CustomerRepository : ICustomerRepository
 {
    // private readonly IAmazonDynamoDB ;
 
-
     public async Task<bool> CreateAsync(CustomerDto customer)
     {
         throw new NotImplementedException();

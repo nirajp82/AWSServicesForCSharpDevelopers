@@ -5,6 +5,7 @@ using Customer.Publisher.Api.Repositories;
 using Customer.Publisher.Api.Services;
 using Customer.Publisher.Api.Validation;
 using Dapper;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Net.Http.Headers;
 
@@ -17,11 +18,16 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 var config = builder.Configuration;
 config.AddEnvironmentVariables("CustomersApi_");
 
-builder.Services.AddControllers().AddFluentValidation(x =>
-{
-    x.RegisterValidatorsFromAssemblyContaining<Program>();
-    x.DisableDataAnnotationsValidation = true;
-});
+//builder.Services.AddControllers().AddFluentValidation(x =>
+//{
+//    x.RegisterValidatorsFromAssemblyContaining<Program>();
+//    x.DisableDataAnnotationsValidation = true;
+//});
+builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
