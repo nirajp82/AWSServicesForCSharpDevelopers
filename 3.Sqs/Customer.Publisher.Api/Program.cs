@@ -46,11 +46,19 @@ builder.Services.AddSingleton<IGitHubService, GitHubService>();
 builder.Services.AddSingleton<IAmazonSQS, AmazonSQSClient>();
 builder.Services.AddSingleton<ISqsMessenger, SqsMessenger>();
 
+//Registers an HttpClient named "GitHub" in the dependency injection container. 
 builder.Services.AddHttpClient("GitHub", httpClient =>
 {
+    //This action method will be called each time _httpClientFactory.CreateClient("GitHub") is invoked.
+    
+    // Set the base address for the HttpClient to the GitHub API base URL.
     httpClient.BaseAddress = new Uri(config.GetValue<string>("GitHub:ApiBaseUrl")!);
+
+    // Add the "Accept" header with the value "application/vnd.github.v3+json" to specify the desired media type for the response.
     httpClient.DefaultRequestHeaders.Add(
         HeaderNames.Accept, "application/vnd.github.v3+json");
+
+    // Add a custom User-Agent header to the requests. It includes a string "Course-" followed by the machine name of the environment.
     httpClient.DefaultRequestHeaders.Add(
         HeaderNames.UserAgent, $"Course-{Environment.MachineName}");
 });

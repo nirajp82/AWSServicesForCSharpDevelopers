@@ -7,7 +7,7 @@ public static class DtoToDomainMapper
 {
     public static Customer ToCustomer(this CustomerDto customerDto)
     {
-        return new Customer
+        var customer = new Customer
         {
             Id = customerDto.Id,
             Email = customerDto.Email,
@@ -15,5 +15,7 @@ public static class DtoToDomainMapper
             FullName = customerDto.FullName,
             DateOfBirth = customerDto.DateOfBirth
         };
+
+        return customer;
     }
 }

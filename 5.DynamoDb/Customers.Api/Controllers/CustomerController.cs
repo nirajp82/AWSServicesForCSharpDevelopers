@@ -16,11 +16,11 @@ public class CustomerController : ControllerBase
     }
 
     [HttpPost("customers")]
-    public async Task<IActionResult> Create([FromBody] CustomerRequest request)
+    public async Task<IActionResult> Create([FromBody] CustomerRequest request, CancellationToken cancellationToken)
     {
         var customer = request.ToCustomer();
 
-        await _customerService.CreateAsync(customer);
+        await _customerService.CreateAsync(customer, cancellationToken);
 
         var customerResponse = customer.ToCustomerResponse();
 
@@ -28,9 +28,9 @@ public class CustomerController : ControllerBase
     }
 
     [HttpGet("customers/{id:guid}")]
-    public async Task<IActionResult> Get([FromRoute] Guid id)
+    public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var customer = await _customerService.GetAsync(id);
+        var customer = await _customerService.GetAsync(id, cancellationToken);
 
         if (customer is null)
         {
@@ -42,18 +42,18 @@ public class CustomerController : ControllerBase
     }
     
     [HttpGet("customers")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var customers = await _customerService.GetAllAsync();
+        var customers = await _customerService.GetAllAsync(cancellationToken);
         var customersResponse = customers.ToCustomersResponse();
         return Ok(customersResponse);
     }
     
     [HttpPut("customers/{id:guid}")]
     public async Task<IActionResult> Update(
-        [FromMultiSource] UpdateCustomerRequest request)
+        [FromMultiSource] UpdateCustomerRequest request, CancellationToken cancellationToken)
     {
-        var existingCustomer = await _customerService.GetAsync(request.Id);
+        var existingCustomer = await _customerService.GetAsync(request.Id, cancellationToken);
 
         if (existingCustomer is null)
         {
@@ -61,16 +61,16 @@ public class CustomerController : ControllerBase
         }
 
         var customer = request.ToCustomer();
-        await _customerService.UpdateAsync(customer);
+        await _customerService.UpdateAsync(customer, cancellationToken);
 
         var customerResponse = customer.ToCustomerResponse();
         return Ok(customerResponse);
     }
     
     [HttpDelete("customers/{id:guid}")]
-    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        var deleted = await _customerService.DeleteAsync(id);
+        var deleted = await _customerService.DeleteAsync(id, cancellationToken);
         if (!deleted)
         {
             return NotFound();
