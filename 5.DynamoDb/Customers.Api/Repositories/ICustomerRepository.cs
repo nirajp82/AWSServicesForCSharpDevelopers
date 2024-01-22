@@ -10,7 +10,7 @@ public interface ICustomerRepository
 
     Task<IEnumerable<CustomerDto>> GetAllAsync(CancellationToken cancellationToken);
 
-    Task<bool> UpdateAsync(CustomerDto customer, CancellationToken cancellationToken);
+    Task<bool> UpdateAsync(CustomerDto customer, DateTime requestStarted, CancellationToken cancellationToken);
 
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }

@@ -11,7 +11,7 @@ public interface ICustomerService
 
     Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken);
 
-    Task<bool> UpdateAsync(Customer customer, CancellationToken cancellationToken);
+    Task<bool> UpdateAsync(Customer customer, DateTime requestStarted, CancellationToken cancellationToken);
 
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }

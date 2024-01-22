@@ -2,11 +2,11 @@
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using Amazon.DynamoDBv2.Model.Internal.MarshallTransformations;
+using Amazon.Runtime.Internal.Transform;
 using Customers.Api.Contracts.Data;
 using Microsoft.Extensions.Options;
 using System.Net;
 
-//using System.Reflection.Metadata;
 using System.Text.Json;
 
 namespace Customers.Api.Repositories;
@@ -29,7 +29,8 @@ public class CustomerRepository : ICustomerRepository
         var createItemReq = new PutItemRequest
         {
             TableName = _tableName,
-            Item = custAttributes
+            Item = custAttributes,
+            ConditionExpression = "attribute_not_exists(pk) and attribute_not_exists(sk)"
         };
         var response = await _dynamoDB.PutItemAsync(createItemReq, cancellationToken);
         return response.HttpStatusCode == HttpStatusCode.OK;
@@ -66,7 +67,7 @@ public class CustomerRepository : ICustomerRepository
         return customers!;
     }
 
-    public async Task<bool> UpdateAsync(CustomerDto customer, CancellationToken cancellationToken)
+    public async Task<bool> UpdateAsync(CustomerDto customer, DateTime requestStarted, CancellationToken cancellationToken)
     {
         customer.UpdatedAt = DateTime.UtcNow;
         var custAsJson = JsonSerializer.Serialize(customer);
@@ -74,7 +75,12 @@ public class CustomerRepository : ICustomerRepository
         var updateItemReq = new PutItemRequest
         {
             TableName = _tableName,
-            Item = custAttributes
+            Item = custAttributes,
+            ConditionExpression = "UpdatedAt < :requestStarted",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":requestStarted", new AttributeValue{S = requestStarted.ToString("O")} }
+            }
         };
         var response = await _dynamoDB.PutItemAsync(updateItemReq, cancellationToken);
         return response.HttpStatusCode == HttpStatusCode.OK;

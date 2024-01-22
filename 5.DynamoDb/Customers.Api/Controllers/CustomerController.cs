@@ -50,9 +50,9 @@ public class CustomerController : ControllerBase
     }
     
     [HttpPut("customers/{id:guid}")]
-    public async Task<IActionResult> Update(
-        [FromMultiSource] UpdateCustomerRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update([FromMultiSource] UpdateCustomerRequest request, CancellationToken cancellationToken)
     {
+        DateTime requestStarted = DateTime.UtcNow;
         var existingCustomer = await _customerService.GetAsync(request.Id, cancellationToken);
 
         if (existingCustomer is null)
@@ -61,7 +61,7 @@ public class CustomerController : ControllerBase
         }
 
         var customer = request.ToCustomer();
-        await _customerService.UpdateAsync(customer, cancellationToken);
+        await _customerService.UpdateAsync(customer, requestStarted, cancellationToken);
 
         var customerResponse = customer.ToCustomerResponse();
         return Ok(customerResponse);
