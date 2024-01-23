@@ -48,20 +48,21 @@ Subscriber (Consumer): Subscribes to a specific SNS topic to receive messages. S
 
 Message Routing: When a message is published to an SNS topic, SNS delivers it to all subscribed endpoints. Depending on the type of subscribers, the message can be sent to multiple endpoints simultaneously.
 
-4. **how it works:**
-5. 
-4.1. **Publisher (Producer)**: Sends a message to a topic on SNS. The topic is like a channel or subject to which subscribers can subscribe.
+4. **How It Works:**
 
-4.2. **SNS Topic**: Acts as a message broker. It receives messages from publishers and broadcasts them to all subscribers.
+4.1. **Publisher (Producer):** Sends a message to a topic on SNS. The topic is like a channel or subject to which subscribers can subscribe.
 
-4.3. **Subscriber (Consumer)**: Subscribes to a specific SNS topic to receive messages. Subscribers can be various AWS services, Lambda functions, SQS queues, or HTTP endpoints.
+4.2. **SNS Topic:** Acts as a message broker. It receives messages from publishers and broadcasts them to all subscribers.
 
-4.4. **Message Routing**: When a message is published to an SNS topic, SNS delivers it to all subscribed endpoints. Depending on the type of subscribers, the message can be sent to multiple endpoints simultaneously.
+4.3. **Subscriber (Consumer):** Subscribes to a specific SNS topic to receive messages. Subscribers can be various AWS services, Lambda functions, SQS queues, or HTTP endpoints.
 
-4.5. **SQS Queue (Optional)**: If an SQS queue is subscribed to the SNS topic, messages are placed in the queue. Subscribers (consumers) can then poll the SQS queue to retrieve and process messages.
-     **Message Retention**: SQS queues can retain messages for a configurable period, allowing consumers to retrieve messages even if they were not available at the time of publishing.
+4.4. **Message Routing:** When a message is published to an SNS topic, SNS delivers it to all subscribed endpoints. Depending on the type of subscribers, the message can be sent to multiple endpoints simultaneously.
 
-4.6. **Message Processing**: Once a subscriber (consumer) receives a message, it processes the message according to its logic. For example, in the case of an SQS queue, a consumer retrieves the message from the queue and processes it.
+4.5. **SQS Queue (Optional):** If an SQS queue is subscribed to the SNS topic, messages are placed in the queue. Subscribers (consumers) can then poll the SQS queue to retrieve and process messages.
+
+   - **Message Retention:** SQS queues can retain messages for a configurable period, allowing consumers to retrieve messages even if they were not available at the time of publishing.
+
+4.6. **Message Processing:** Once a subscriber (consumer) receives a message, it processes the message according to its logic. For example, in the case of an SQS queue, a consumer retrieves the message from the queue and processes it.
 
 5. **Possible Subscribers of SNS:**
    - Subscribers can be various AWS services or endpoints, such as:
