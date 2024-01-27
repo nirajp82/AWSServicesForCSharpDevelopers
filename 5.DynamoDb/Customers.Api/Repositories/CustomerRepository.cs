@@ -69,7 +69,7 @@ public class CustomerRepository : ICustomerRepository
 
     public async Task<CustomerDto?> GetByEmail(string email, CancellationToken cancellationToken)
     {
-        // Constructing a query request to DynamoDB to use LSI/GSI.
+        // Constructing a query request to DynamoDB to query data using LSI/GSI (Index).
         var queryRequest = new QueryRequest
         {
             TableName = _custTableName,
