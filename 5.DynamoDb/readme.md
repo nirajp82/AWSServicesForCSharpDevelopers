@@ -4,11 +4,11 @@ Amazon DynamoDB is a fully managed NoSQL database service provided by Amazon Web
 
 1. [Introduction to DynamoDB](#introduction-to-dynamodb)
 2. [Partition and Sort key](#partition-and-sort-key)
-3. [Understanding DynamoDB Capacity](#understanding-dynamodb-capacity)
-4. [How auto scaling work](#how-auto-scaling-work)
-5. [Partition Key vs Local Secondary Index vs Global Secondary Index](#partition-key-vs-local-secondary-index-vs-global-secondary-index)
-6. [Transaction vs Batch opeation](#transaction-vs-batch-opeation)
-7. [Cost Optimization best practice](#cost-optimization-best-practice)
+3. [Partition Key vs Local Secondary Index vs Global Secondary Index](#partition-key-vs-local-secondary-index-vs-global-secondary-index)
+4. [Understanding DynamoDB Capacity](#understanding-dynamodb-capacity)
+5. [How auto scaling work](#how-auto-scaling-work)
+7. [Transaction vs Batch opeation](#transaction-vs-batch-opeation)
+8. [Cost Optimization best practice](#cost-optimization-best-practice)
 
 ## Introduction to DynamoDB:
 
@@ -69,6 +69,18 @@ Overall, DynamoDB offers a highly scalable, high-performance, and fully managed 
 **Remember:**
 * The partition key and sort key (if used) are immutable once a table is created.
 * Choose them carefully based on your application's access patterns to ensure optimal performance and cost-efficiency.
+
+## Partition Key vs Local Secondary Index vs Global Secondary Index
+
+| Feature | Partition Key | Local Secondary Index (LSI) | Global Secondary Index (GSI) |
+|---|---|---|---|
+| **Definition** |  Identifies the partition in which an item is stored, and queries are scoped to a single partition. | A local secondary index is "local" in the partition. Index for efficient queries within a partition.   | Index for efficient queries across all partitions |
+| **Queries** | Determines where data is stored and quickly retrieved | Enables fast range queries and filtering within a partition | Enables queries on non-partition key attributes across all partitions |
+| **Scope** | Single partition | Single partition. A Local Secondary Index (LSI) in DynamoDB is scoped within a single partition of the table. When you query using an LSI, DynamoDB restricts the search to the partition containing the data associated with the partition key value you specify in the query. | Entire table |
+| **Cost** | No additional cost | No additional cost | Additional cost, charged per read and write capacity unit |
+| **Consistency** | Strongly consistent with table | Strongly consistent with table | Eventually consistent with table |
+| **How Many**| Every table must have a primary key, which can be either: Simple primary key: A single attribute (partition key). Composite primary key: Two attributes (partition key and sort key). |You can create up to 5 LSIs per table. However, each LSI must share the same partition key as the table's primary key. They can only have a different sort key. | We can create up to 20 GSIs per table.GSIs can have a different partition key and sort key than the table's primary key. However, keep in mind that GSIs incur additional costs for read and write capacity units. |
+| **Best Practices** | Wide range of values, frequent access | Frequently queried attributes within partition | Frequently queried non-partition key attributes across table |
 
 ## Understanding DynamoDB Capacity
 
@@ -147,18 +159,6 @@ In both cases, DynamoDB ensures that the application can handle varying workload
 - Scaling up is faster than scaling down to prioritize performance.
 - Target utilization, minimum and maximum capacity settings, and on-demand mode offer control over scaling behavior.
 - Monitor your table's capacity and adjust settings as needed to optimize performance and cost.
-
-## Partition Key vs Local Secondary Index vs Global Secondary Index
-
-| Feature | Partition Key | Local Secondary Index (LSI) | Global Secondary Index (GSI) |
-|---|---|---|---|
-| **Definition** |  Identifies the partition in which an item is stored, and queries are scoped to a single partition. | A local secondary index is "local" in the partition. Index for efficient queries within a partition.   | Index for efficient queries across all partitions |
-| **Queries** | Determines where data is stored and quickly retrieved | Enables fast range queries and filtering within a partition | Enables queries on non-partition key attributes across all partitions |
-| **Scope** | Single partition | Single partition. A Local Secondary Index (LSI) in DynamoDB is scoped within a single partition of the table. When you query using an LSI, DynamoDB restricts the search to the partition containing the data associated with the partition key value you specify in the query. | Entire table |
-| **Cost** | No additional cost | No additional cost | Additional cost, charged per read and write capacity unit |
-| **Consistency** | Strongly consistent with table | Strongly consistent with table | Eventually consistent with table |
-| **How Many**| Every table must have a primary key, which can be either: Simple primary key: A single attribute (partition key). Composite primary key: Two attributes (partition key and sort key). |You can create up to 5 LSIs per table. However, each LSI must share the same partition key as the table's primary key. They can only have a different sort key. | We can create up to 20 GSIs per table.GSIs can have a different partition key and sort key than the table's primary key. However, keep in mind that GSIs incur additional costs for read and write capacity units. |
-| **Best Practices** | Wide range of values, frequent access | Frequently queried attributes within partition | Frequently queried non-partition key attributes across table |
 
 ## Transaction vs Batch opeation
 | Feature | Transactions | Batch Operations |
