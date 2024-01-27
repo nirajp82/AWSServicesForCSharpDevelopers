@@ -127,6 +127,48 @@ In both cases, DynamoDB ensures that the application can handle varying workload
 | Cost | Incur additional charges compared to batch operations | Generally less expensive than transactions. |
 
 ## How auto scaling work
+ **Here's how DynamoDB auto scaling works to handle traffic fluctuations:**
+
+**1. Monitoring and Triggering:**
+
+- DynamoDB continuously monitors your table's consumed read and write capacity units (RCUs and WCUs) using Amazon CloudWatch metrics.
+- Auto scaling is triggered when consumed capacity exceeds a specified target utilization threshold for a sustained period.
+
+**2. Scaling Up:**
+
+- **Frequency:** Scales up more quickly than down, typically within a few minutes.
+- **Trigger:** When consumed capacity exceeds the target utilization for 2 consecutive minutes.
+- **Action:** DynamoDB automatically increases the provisioned capacity (RCUs and WCUs) to handle the increased load.
+
+**3. Scaling Down:**
+
+- **Frequency:** Scales down more cautiously to avoid premature capacity reductions, usually within 15-30 minutes.
+- **Trigger:** When consumed capacity falls below the target utilization minus 20% for 15 consecutive minutes.
+- **Action:** DynamoDB automatically decreases the provisioned capacity to optimize costs while maintaining performance.
+
+**4. Target Utilization:**
+
+- You can adjust the target utilization percentage (default is 70%) to influence scaling behavior.
+- A higher target utilization leads to more aggressive scaling up, while a lower target utilization results in more conservative scaling.
+
+**5. Minimum and Maximum Capacity:**
+
+- You set minimum and maximum capacity limits to control the extent of scaling.
+- This prevents excessive costs or resource exhaustion.
+
+**Additional Considerations:**
+
+- **On-Demand Mode:** For unpredictable workloads, consider on-demand mode for automatic scaling without manual capacity provisioning.
+- **Warm Up Period:** New tables or those with recently increased capacity might experience a temporary warm-up period before reaching full capacity.
+- **CloudWatch Alarms:** Use CloudWatch alarms to receive notifications when auto scaling is triggered or if capacity limits are reached.
+
+**Key Points:**
+
+- Auto scaling ensures DynamoDB tables dynamically adapt to changing traffic patterns.
+- Scaling up is faster than scaling down to prioritize performance.
+- Target utilization, minimum and maximum capacity settings, and on-demand mode offer control over scaling behavior.
+- Monitor your table's capacity and adjust settings as needed to optimize performance and cost.
+
 ## Cost Optimization best practice
 
 
