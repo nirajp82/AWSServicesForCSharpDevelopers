@@ -26,7 +26,7 @@ public static class DomainToDtoMapper
         {
             var customerDto = new CustomerDto
             {
-                Id = customer.CustomerId ?? new Guid(),
+                Id = customer.CustomerId ?? Guid.NewGuid(),
                 Email = customer.Email,
                 GitHubUsername = customer.GitHubUsername,
                 FullName = customer.FullName,
@@ -35,5 +35,51 @@ public static class DomainToDtoMapper
             customersDto.Add(customerDto);
         }
         return customersDto;
+    }
+
+    public static CustomerDto ToCustomerDto(this CustomerOrderRequest custOrderRequest)
+    {
+        var customerDto = new CustomerDto
+        {
+            Id = Guid.NewGuid(),
+            Email = custOrderRequest.Email,
+            FullName = custOrderRequest.FullName,
+        };
+        return customerDto;
+    }
+
+    public static OrderDto ToOrderDto(this CustomerOrderRequest custOrderRequest, Guid customerId)
+    {
+        var orderDto = new OrderDto
+        {
+            OrderId = Guid.NewGuid(),
+            CustomerId = customerId,
+            BillingAddress = custOrderRequest.BillingAddress.ToAddressDto(),
+            ShippingAddress = custOrderRequest.ShippingAddress.ToAddressDto(),
+            OrderDetails = custOrderRequest.OrderDetails.ToOrderItemsDto()
+        };
+        return orderDto;
+    }
+
+    public static AddressDto ToAddressDto(this AddressRequest addressRequest)
+    {
+        return new AddressDto
+        {
+            Address1 = addressRequest.Address1,
+            Address2 = addressRequest.Address2,
+            City = addressRequest.City,
+            State = addressRequest.State,
+            Zip = addressRequest.Zip
+        };
+    }
+
+    public static IEnumerable<OrderItemDto> ToOrderItemsDto(this IEnumerable<OrderItemRequest> orderItems)
+    {
+        return from order in orderItems
+               select new OrderItemDto
+               {
+                   Price = order.Price,
+                   ProductId = order.ProductId
+               };
     }
 }

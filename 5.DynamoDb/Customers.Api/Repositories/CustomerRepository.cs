@@ -12,7 +12,8 @@ namespace Customers.Api.Repositories;
 public class CustomerRepository : ICustomerRepository
 {
     private readonly IAmazonDynamoDB _dynamoDB;
-    private const string _tableName = "customers";
+    private const string _custTableName = "customers";
+    private const string _orderTableName = "orders";
 
     // Constructor to initialize the DynamoDB client
     public CustomerRepository(IAmazonDynamoDB dynamoDB)
@@ -33,7 +34,7 @@ public class CustomerRepository : ICustomerRepository
         // Prepare the PutItem request with conditional expression
         var createItemReq = new PutItemRequest
         {
-            TableName = _tableName,
+            TableName = _custTableName,
             Item = custAttributes,
             ConditionExpression = "attribute_not_exists(pk) and attribute_not_exists(sk)"
         };
@@ -50,7 +51,7 @@ public class CustomerRepository : ICustomerRepository
         var custId = id.ToString();
 
         // Prepare GetItem request with primary key attributes
-        var getItemRequest = new GetItemRequest(_tableName, new Dictionary<string, AttributeValue>
+        var getItemRequest = new GetItemRequest(_custTableName, new Dictionary<string, AttributeValue>
         {
             { "pk", new AttributeValue(custId) },
             { "sk", new AttributeValue(custId) }
@@ -71,7 +72,7 @@ public class CustomerRepository : ICustomerRepository
         // Prepare Scan request to retrieve all items from the table
         var scanRequest = new ScanRequest()
         {
-            TableName = _tableName
+            TableName = _custTableName
         };
 
         // Execute Scan request and deserialize items to CustomerDto list
@@ -97,7 +98,7 @@ public class CustomerRepository : ICustomerRepository
         // Prepare PutItem request with conditional expression for optimistic locking
         var updateItemReq = new PutItemRequest
         {
-            TableName = _tableName,
+            TableName = _custTableName,
             Item = custAttributes,
 
             // Specify a condition for the DynamoDB update operation using optimistic locking.
@@ -130,7 +131,7 @@ public class CustomerRepository : ICustomerRepository
         // Prepare DeleteItem request with primary key attributes
         var deleteItemRequest = new DeleteItemRequest
         {
-            TableName = _tableName,
+            TableName = _custTableName,
             Key = new Dictionary<string, AttributeValue>
             {
                 {"pk",new AttributeValue(custId) },
@@ -144,13 +145,13 @@ public class CustomerRepository : ICustomerRepository
     }
 
     #region Batch Operation
-    
+
     public async Task<bool> ProcessCustomerBatchAsync(IEnumerable<CustomerDto>? customersToCreate, IEnumerable<CustomerDto>? customersToUpdate,
         IEnumerable<CustomerDto>? customersToDelete, CancellationToken cancellationToken)
     {
         //This request encapsulates multiple write operations that are sent to DynamoDB in a single request.
         //This is more efficient than making individual requests for each operation.
-        List <WriteRequest> writeRequests = new List<WriteRequest>();
+        List<WriteRequest> writeRequests = new List<WriteRequest>();
 
         //To add items, you use `PutRequest` within `WriteRequest`.
         BatchPutRequests(customersToCreate, writeRequests);
@@ -164,7 +165,7 @@ public class CustomerRepository : ICustomerRepository
         {
             RequestItems = new Dictionary<string, List<WriteRequest>>
             {
-                { _tableName, writeRequests }
+                { _custTableName, writeRequests }
             }
         };
 
@@ -218,6 +219,50 @@ public class CustomerRepository : ICustomerRepository
                 });
             }
         }
-    } 
+    }
+    #endregion
+
+
+    #region Transaction
+    public async Task<bool> CreateOrderAsync(CustomerDto customer, OrderDto order, CancellationToken cancellationToken)
+    {
+        // Create a request to perform a transactional write operation
+        var transactionWriteRequest = new TransactWriteItemsRequest
+        {
+            // Define the list of transactional items to be performed
+            TransactItems = new List<TransactWriteItem>
+        {
+            // Add a transactional item to put customer data into the customer table
+            new TransactWriteItem
+            {
+                Put = new Put
+                {
+                    TableName = _custTableName,
+                    // Serialize the customer object to JSON and convert it to DynamoDB Document format
+                    Item = Document.FromJson(JsonSerializer.Serialize(customer)).ToAttributeMap(),
+                    // Optionally, you can specify a condition for this write operation
+                    // ConditionExpression = ""
+                }
+            },
+            // Add a transactional item to put order data into the order table
+            new TransactWriteItem
+            {
+                Put = new Put
+                {
+                    TableName  = _orderTableName,
+                    // Serialize the order object to JSON and convert it to DynamoDB Document format
+                    Item  = Document.FromJson(JsonSerializer.Serialize(order)).ToAttributeMap()
+                }
+            }
+        }
+        };
+
+        // Execute the transactional write operation asynchronously
+        var response = await _dynamoDB.TransactWriteItemsAsync(transactionWriteRequest, cancellationToken);
+
+        // Return true if the batch operation was successful
+        return response.HttpStatusCode == HttpStatusCode.OK;
+    }
+
     #endregion
 }

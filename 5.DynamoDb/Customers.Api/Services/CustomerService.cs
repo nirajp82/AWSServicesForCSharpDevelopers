@@ -78,6 +78,13 @@ public class CustomerService : ICustomerService
         return await _customerRepository.ProcessCustomerBatchAsync(customersToCreate, customersToUpdate, customersToDelete, cancellationToken);
     }
 
+    public async Task<bool> CreateOrderAsync(CustomerOrderRequest custOrderRequest, CancellationToken cancellationToken)
+    {
+        var customer = custOrderRequest.ToCustomerDto();
+        var order = custOrderRequest.ToOrderDto(customer.Id);
+        return await _customerRepository.CreateOrderAsync(customer, order, cancellationToken);
+    }
+
     private static ValidationFailure[] GenerateValidationError(string paramName, string message)
     {
         return new[]

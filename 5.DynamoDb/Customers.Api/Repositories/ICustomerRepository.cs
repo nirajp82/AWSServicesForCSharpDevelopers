@@ -16,4 +16,5 @@ public interface ICustomerRepository
 
     Task<bool> ProcessCustomerBatchAsync(IEnumerable<CustomerDto>? customersToCreate, IEnumerable<CustomerDto>? customersToUpdate,
             IEnumerable<CustomerDto>? customersToDelete, CancellationToken cancellationToken);
+    Task<bool> CreateOrderAsync(CustomerDto customer, OrderDto order, CancellationToken cancellationToken);
 }

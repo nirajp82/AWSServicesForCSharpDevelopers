@@ -90,4 +90,15 @@ public class CustomerController : ControllerBase
         }
         return Ok();
     }
+
+    [HttpPost("Order")]
+    public async Task<IActionResult> Order([FromBody] CustomerOrderRequest custOrderRequest, CancellationToken cancellationToken) 
+    {
+        var success = await _customerService.CreateOrderAsync(custOrderRequest, cancellationToken);
+        if (!success)
+        {
+            return StatusCode(500, "An internal server error occurred");
+        }
+        return Ok();
+    }
 }

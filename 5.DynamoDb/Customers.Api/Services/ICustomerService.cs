@@ -17,4 +17,5 @@ public interface ICustomerService
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 
     Task<bool> ProcessCustomerBatchAsync(IEnumerable<CustomerBatchRequest> batch, CancellationToken cancellationToken);
+    Task<bool> CreateOrderAsync(CustomerOrderRequest custOrderRequest, CancellationToken cancellationToken);
 }
