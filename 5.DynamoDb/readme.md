@@ -5,9 +5,9 @@ Amazon DynamoDB is a fully managed NoSQL database service provided by Amazon Web
 1. [Introduction to DynamoDB](#introduction-to-dynamodb)
 2. [Partition and Sort key](#partition-and-sort-key)
 3. [Understanding DynamoDB Capacity](#understanding-dynamodb-capacity)
-4. [Partition Key vs Local Secondary Index vs Global Secondary Index](#partition-key-vs-local-secondary-index-vs-global-secondary-index)
-5. [Transaction vs Batch opeation](#transaction-vs-batch-opeation)
-6. [How auto scaling work](#how-auto-scaling-work)
+4. [How auto scaling work](#how-auto-scaling-work)
+5. [Partition Key vs Local Secondary Index vs Global Secondary Index](#partition-key-vs-local-secondary-index-vs-global-secondary-index)
+6. [Transaction vs Batch opeation](#transaction-vs-batch-opeation)
 7. [Cost Optimization best practice](#cost-optimization-best-practice)
 
 ## Introduction to DynamoDB:
@@ -104,27 +104,6 @@ Consider an e-commerce application that uses DynamoDB to store product catalog i
 
 In both cases, DynamoDB ensures that the application can handle varying workloads while providing consistent performance and avoiding throttling of requests. The choice between provisioned and on-demand capacity depends on the application's traffic patterns, cost considerations, and the need for predictable throughput provisioning.
 
-## Partition Key vs Local Secondary Index vs Global Secondary Index
-
-| Feature | Partition Key | Local Secondary Index (LSI) | Global Secondary Index (GSI) |
-|---|---|---|---|
-| **Definition** |  Identifies the partition in which an item is stored, and queries are scoped to a single partition. | A local secondary index is "local" in the partition. Index for efficient queries within a partition.   | Index for efficient queries across all partitions |
-| **Queries** | Determines where data is stored and quickly retrieved | Enables fast range queries and filtering within a partition | Enables queries on non-partition key attributes across all partitions |
-| **Scope** | Single partition | Single partition. A Local Secondary Index (LSI) in DynamoDB is scoped within a single partition of the table. When you query using an LSI, DynamoDB restricts the search to the partition containing the data associated with the partition key value you specify in the query. | Entire table |
-| **Cost** | No additional cost | No additional cost | Additional cost, charged per read and write capacity unit |
-| **Consistency** | Strongly consistent with table | Strongly consistent with table | Eventually consistent with table |
-| **How Many**| Every table must have a primary key, which can be either: Simple primary key: A single attribute (partition key). Composite primary key: Two attributes (partition key and sort key). |You can create up to 5 LSIs per table. However, each LSI must share the same partition key as the table's primary key. They can only have a different sort key. | We can create up to 20 GSIs per table.GSIs can have a different partition key and sort key than the table's primary key. However, keep in mind that GSIs incur additional costs for read and write capacity units. |
-| **Best Practices** | Wide range of values, frequent access | Frequently queried attributes within partition | Frequently queried non-partition key attributes across table |
-
-## Transaction vs Batch opeation
-| Feature | Transactions | Batch Operations |
-|---|---|---|
-|Purpose|Ideal for scenarios requiring strict consistency, critical operations and data integrity|Suitable for non-critical operations where partial completion is acceptable|
-| Atomicity | All-or-nothing - Ensures that all operations within a transaction either succeed or fail together, maintaining data consistency. | Not atomic - Operations within a batch are not guaranteed to succeed or fail together. Partial completion is possible.|
-| Isolation | Isolated execution | No isolation |
-| Scope | Can only operate on up to 25 items across a maximum of 10 tables within the same AWS account and region. | Can operate on up to 25 items per table, with a maximum of 100 items across multiple tables. |
-| Consistency | Strongly consistent | Eventually consistent |
-| Cost | Incur additional charges compared to batch operations | Generally less expensive than transactions. |
 
 ## How auto scaling work
  **Here's how DynamoDB auto scaling works to handle traffic fluctuations:**
@@ -169,6 +148,65 @@ In both cases, DynamoDB ensures that the application can handle varying workload
 - Target utilization, minimum and maximum capacity settings, and on-demand mode offer control over scaling behavior.
 - Monitor your table's capacity and adjust settings as needed to optimize performance and cost.
 
+## Partition Key vs Local Secondary Index vs Global Secondary Index
+
+| Feature | Partition Key | Local Secondary Index (LSI) | Global Secondary Index (GSI) |
+|---|---|---|---|
+| **Definition** |  Identifies the partition in which an item is stored, and queries are scoped to a single partition. | A local secondary index is "local" in the partition. Index for efficient queries within a partition.   | Index for efficient queries across all partitions |
+| **Queries** | Determines where data is stored and quickly retrieved | Enables fast range queries and filtering within a partition | Enables queries on non-partition key attributes across all partitions |
+| **Scope** | Single partition | Single partition. A Local Secondary Index (LSI) in DynamoDB is scoped within a single partition of the table. When you query using an LSI, DynamoDB restricts the search to the partition containing the data associated with the partition key value you specify in the query. | Entire table |
+| **Cost** | No additional cost | No additional cost | Additional cost, charged per read and write capacity unit |
+| **Consistency** | Strongly consistent with table | Strongly consistent with table | Eventually consistent with table |
+| **How Many**| Every table must have a primary key, which can be either: Simple primary key: A single attribute (partition key). Composite primary key: Two attributes (partition key and sort key). |You can create up to 5 LSIs per table. However, each LSI must share the same partition key as the table's primary key. They can only have a different sort key. | We can create up to 20 GSIs per table.GSIs can have a different partition key and sort key than the table's primary key. However, keep in mind that GSIs incur additional costs for read and write capacity units. |
+| **Best Practices** | Wide range of values, frequent access | Frequently queried attributes within partition | Frequently queried non-partition key attributes across table |
+
+## Transaction vs Batch opeation
+| Feature | Transactions | Batch Operations |
+|---|---|---|
+|Purpose|Ideal for scenarios requiring strict consistency, critical operations and data integrity|Suitable for non-critical operations where partial completion is acceptable|
+| Atomicity | All-or-nothing - Ensures that all operations within a transaction either succeed or fail together, maintaining data consistency. | Not atomic - Operations within a batch are not guaranteed to succeed or fail together. Partial completion is possible.|
+| Isolation | Isolated execution | No isolation |
+| Scope | Can only operate on up to 25 items across a maximum of 10 tables within the same AWS account and region. | Can operate on up to 25 items per table, with a maximum of 100 items across multiple tables. |
+| Consistency | Strongly consistent | Eventually consistent |
+| Cost | Incur additional charges compared to batch operations | Generally less expensive than transactions. |
+
 ## Cost Optimization best practice
+ **Here are some key best practices for optimizing costs in AWS DynamoDB:**
 
+**1. Capacity Planning and Auto Scaling:**
 
+- **Rightsize Capacity:** Provision enough capacity to meet your workload, but avoid overprovisioning.
+- **Utilize Auto Scaling:** Leverage DynamoDB's auto scaling features to dynamically adjust capacity based on traffic patterns.
+- **Consider On-Demand Mode:** For unpredictable or highly variable workloads, consider on-demand capacity mode to avoid overprovisioning costs.
+
+**2. Data Modeling and Access Patterns:**
+
+- **Choose Partition and Sort Keys Wisely:** Select attributes that distribute data evenly and match your access patterns to minimize capacity needed for efficient retrieval.
+- **Optimize Query Patterns:** Design queries efficiently to minimize consumed capacity.
+- **Utilize Projections:** Retrieve only necessary attributes to reduce data transfer costs.
+
+**3. Data Storage and Lifecycle Management:**
+
+- **Compress Items:** Use compression techniques like GZIP to reduce item size and storage costs.
+- **Archive Inactive Data:** Move inactive data to cheaper storage solutions like Amazon S3 Glacier for long-term retention.
+- **Enable Time to Live (TTL):** Automatically delete expired items to reduce storage costs.
+
+**4. Indexing Strategies:**
+
+- **Use Indexes Judiciously:** Indexes consume additional capacity. Create them only for essential access patterns.
+- **Consider LSIs for Local Access:** Use Local Secondary Indexes (LSIs) for queries within the same partition key value.
+- **Mind GSI Costs:** Global Secondary Indexes (GSIs) incur additional costs, so use them strategically.
+
+**5. Additional Cost-Saving Measures:**
+
+- **Utilize DynamoDB Accelerator (DAX):** Cache frequently accessed items to reduce read costs, especially for high-traffic workloads.
+- **Monitor and Analyze Usage:** Track table usage with CloudWatch metrics to identify optimization opportunities.
+- **Consider Reserved Capacity:** For predictable workloads, purchase reserved capacity at discounted rates.
+- **Explore Savings Plans:** Commit to a consistent usage level for DynamoDB and other AWS services to potentially save more.
+- **Leverage DynamoDB Standard-Infrequent Access (Standard-IA) Table Class:** For less frequently accessed data, this class offers lower storage costs.
+
+**Remember:**
+
+- Regularly review and adjust your DynamoDB configuration to ensure cost-effectiveness.
+- Prioritize cost optimization in the initial table design stage.
+- Balance cost savings with performance requirements for your application.
