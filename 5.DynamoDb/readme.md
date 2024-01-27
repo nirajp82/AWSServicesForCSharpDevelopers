@@ -106,7 +106,7 @@ In both cases, DynamoDB ensures that the application can handle varying workload
 
 | Feature | Partition Key | Local Secondary Index (LSI) | Global Secondary Index (GSI) |
 |---|---|---|---|
-| **Definition** |  Identifies the partition in which an item is stored, and queries are scoped to a single partition. | Index for efficient queries within a partition | Index for efficient queries across all partitions |
+| **Definition** |  Identifies the partition in which an item is stored, and queries are scoped to a single partition. | A local secondary index is "local" in the partition. Index for efficient queries within a partition.   | Index for efficient queries across all partitions |
 | **Queries** | Determines where data is stored and quickly retrieved | Enables fast range queries and filtering within a partition | Enables queries on non-partition key attributes across all partitions |
 | **Scope** | Single partition | Single partition | Entire table |
 | **Cost** | No additional cost | No additional cost | Additional cost, charged per read and write capacity unit |
