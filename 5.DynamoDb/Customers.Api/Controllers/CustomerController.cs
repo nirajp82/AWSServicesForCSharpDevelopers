@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Customers.Api.Controllers;
 
-[ApiController]
+[ApiController()]
+[Route("customers")]
 public class CustomerController : ControllerBase
 {
     private readonly ICustomerService _customerService;
@@ -15,7 +16,7 @@ public class CustomerController : ControllerBase
         _customerService = customerService;
     }
 
-    [HttpPost("customers")]
+    [HttpPost]
     public async Task<IActionResult> Create([FromBody] CustomerRequest request, CancellationToken cancellationToken)
     {
         var customer = request.ToCustomer();
@@ -27,7 +28,7 @@ public class CustomerController : ControllerBase
         return CreatedAtAction("Get", new { customerResponse.Id }, customerResponse);
     }
 
-    [HttpGet("customers/{id:guid}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var customer = await _customerService.GetAsync(id, cancellationToken);
@@ -41,7 +42,7 @@ public class CustomerController : ControllerBase
         return Ok(customerResponse);
     }
     
-    [HttpGet("customers")]
+    [HttpGet()]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var customers = await _customerService.GetAllAsync(cancellationToken);
@@ -49,7 +50,7 @@ public class CustomerController : ControllerBase
         return Ok(customersResponse);
     }
     
-    [HttpPut("customers/{id:guid}")]
+    [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update([FromMultiSource] UpdateCustomerRequest request, CancellationToken cancellationToken)
     {
         DateTime requestStarted = DateTime.UtcNow;
@@ -67,7 +68,7 @@ public class CustomerController : ControllerBase
         return Ok(customerResponse);
     }
     
-    [HttpDelete("customers/{id:guid}")]
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var deleted = await _customerService.DeleteAsync(id, cancellationToken);
@@ -76,6 +77,17 @@ public class CustomerController : ControllerBase
             return NotFound();
         }
 
+        return Ok();
+    }
+
+    [HttpPost("batch")]
+    public async Task<IActionResult> Batch([FromBody] List<CustomerBatchRequest> batch, CancellationToken cancellationToken)
+    {
+        var success = await _customerService.ProcessCustomerBatchAsync(batch, cancellationToken);
+        if (!success) 
+        {
+            return StatusCode(500, "An internal server error occurred");
+        }
         return Ok();
     }
 }

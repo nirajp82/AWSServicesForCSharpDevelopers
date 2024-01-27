@@ -11,22 +11,16 @@ public class DataSeeder
     {
         var dynamoDb = new AmazonDynamoDBClient();
         var lines = await File.ReadAllLinesAsync("./movies.csv");
-        for (int i = 0; i < lines.Length; i++)
+        for (int rIdx = 1; rIdx < lines.Length; rIdx++) // rIdx = 0 is header (Skip it)
         {
-            if (i == 0)
-            {
-                continue; //Skip header
-            }
-
-            var line = lines[i];
+            var line = lines[rIdx];
             var commaSplit = line.Split(',');
-
             var title = commaSplit[0];
             var year = int.Parse(commaSplit[1]);
             var ageRestriction = int.Parse(commaSplit[2]);
             var rottenTomatoes = int.Parse(commaSplit[3]);
 
-            var movie = new Movie
+            var movie = new MovieYearTitle
             {
                 Id = Guid.NewGuid(),
                 Title = title,

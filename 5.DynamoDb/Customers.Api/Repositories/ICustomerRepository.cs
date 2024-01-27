@@ -13,4 +13,7 @@ public interface ICustomerRepository
     Task<bool> UpdateAsync(CustomerDto customer, DateTime requestStarted, CancellationToken cancellationToken);
 
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
+
+    Task<bool> ProcessCustomerBatchAsync(IEnumerable<CustomerDto>? customersToCreate, IEnumerable<CustomerDto>? customersToUpdate,
+            IEnumerable<CustomerDto>? customersToDelete, CancellationToken cancellationToken);
 }

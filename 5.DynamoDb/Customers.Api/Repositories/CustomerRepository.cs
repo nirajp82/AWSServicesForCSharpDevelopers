@@ -2,6 +2,7 @@
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using Customers.Api.Contracts.Data;
+using System.ComponentModel;
 using System.Net;
 
 using System.Text.Json;
@@ -98,7 +99,7 @@ public class CustomerRepository : ICustomerRepository
         {
             TableName = _tableName,
             Item = custAttributes,
-            
+
             // Specify a condition for the DynamoDB update operation using optimistic locking.
             // This condition ensures that the update will only be performed if the 'UpdatedAt'
             // attribute in the database is less than the 'requestStarted' timestamp.
@@ -141,4 +142,82 @@ public class CustomerRepository : ICustomerRepository
         var response = await _dynamoDB.DeleteItemAsync(deleteItemRequest, cancellationToken);
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
+
+    #region Batch Operation
+    
+    public async Task<bool> ProcessCustomerBatchAsync(IEnumerable<CustomerDto>? customersToCreate, IEnumerable<CustomerDto>? customersToUpdate,
+        IEnumerable<CustomerDto>? customersToDelete, CancellationToken cancellationToken)
+    {
+        //This request encapsulates multiple write operations that are sent to DynamoDB in a single request.
+        //This is more efficient than making individual requests for each operation.
+        List <WriteRequest> writeRequests = new List<WriteRequest>();
+
+        //To add items, you use `PutRequest` within `WriteRequest`.
+        BatchPutRequests(customersToCreate, writeRequests);
+        //use a `PutRequest` within `WriteRequest` to update an existing item.
+        BatchPutRequests(customersToUpdate, writeRequests);
+        //For deletion, use `DeleteRequest` within `WriteRequest`.
+        BatchDeleteRequests(customersToDelete, writeRequests);
+
+        // Create a batch write item request
+        var batchItemRequest = new BatchWriteItemRequest
+        {
+            RequestItems = new Dictionary<string, List<WriteRequest>>
+            {
+                { _tableName, writeRequests }
+            }
+        };
+
+        // Execute the batch write item request asynchronously
+        /*
+            * Batch operations in DynamoDB allow you to put or delete multiple items across multiple tables in a single request.
+                - Each operation within a batch can succeed or fail independently of the others.
+                - Batch operations are mainly used for efficiency and reducing the number of network round trips when dealing with multiple items or tables.
+                - Batch operations do not support transactional guarantees, meaning if one operation fails within the batch, 
+                    the others may still succeed.
+         */
+        var response = await _dynamoDB.BatchWriteItemAsync(batchItemRequest, cancellationToken);
+
+        // Return true if the batch operation was successful
+        return response.HttpStatusCode == HttpStatusCode.OK;
+    }
+
+    void BatchPutRequests(IEnumerable<CustomerDto>? customersToCreate, List<WriteRequest> writeRequests)
+    {
+        if (customersToCreate != null)
+        {
+            foreach (var customer in customersToCreate)
+            {
+                writeRequests.Add(new WriteRequest
+                {
+                    PutRequest = new PutRequest
+                    {
+                        Item = Document.FromJson(JsonSerializer.Serialize(customer)).ToAttributeMap(),
+                    }
+                });
+            }
+        }
+    }
+
+    void BatchDeleteRequests(IEnumerable<CustomerDto>? customersToDelete, List<WriteRequest> writeRequests)
+    {
+        if (customersToDelete != null)
+        {
+            foreach (var customer in customersToDelete)
+            {
+                writeRequests.Add(new WriteRequest
+                {
+                    DeleteRequest = new DeleteRequest
+                    {
+                        Key = new Dictionary<string, AttributeValue>
+                        {
+                            {"pk", new AttributeValue { S = customer.Pk }},
+                            {"sk", new AttributeValue { S = customer.Sk }}
+                        }
+                    }
+                });
+            }
+        }
+    } 
+    #endregion
 }

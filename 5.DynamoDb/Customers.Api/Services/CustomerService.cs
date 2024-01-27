@@ -1,4 +1,5 @@
-﻿using Customers.Api.Domain;
+﻿using Customers.Api.Contracts.Requests;
+using Customers.Api.Domain;
 using Customers.Api.Mapping;
 using Customers.Api.Repositories;
 using FluentValidation;
@@ -67,6 +68,14 @@ public class CustomerService : ICustomerService
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _customerRepository.DeleteAsync(id, cancellationToken);
+    }
+
+    public async Task<bool> ProcessCustomerBatchAsync(IEnumerable<CustomerBatchRequest> batch, CancellationToken cancellationToken)
+    {
+        var customersToCreate = batch.ToCustomersDto(CustomerBatchRequest.ActionType.Create);
+        var customersToUpdate = batch.ToCustomersDto(CustomerBatchRequest.ActionType.Update);
+        var customersToDelete = batch.ToCustomersDto(CustomerBatchRequest.ActionType.Delete);
+        return await _customerRepository.ProcessCustomerBatchAsync(customersToCreate, customersToUpdate, customersToDelete, cancellationToken);
     }
 
     private static ValidationFailure[] GenerateValidationError(string paramName, string message)

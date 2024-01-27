@@ -1,12 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<InvariantGlobalization>true</InvariantGlobalization>
+	</PropertyGroup>
 
-    <ItemGroup>
+	<ItemGroup>
       <None Remove="movies.csv" />
       <Content Include="movies.csv">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -14,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.101.24" />
-    </ItemGroup>
+		<PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.301" />
+	</ItemGroup>
 
 </Project>

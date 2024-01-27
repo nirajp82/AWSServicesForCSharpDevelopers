@@ -11,6 +11,9 @@ namespace Customer.Consumer.Api
     /// <summary>
     /// BackgroundService, runs long-running IHostedService tasks with a single method — ExecuteAsync method. 
     /// IHostedService is not used here because IHostedService handles short-running tasks using the StartAsync and StopAsync methods.
+    /// --------------
+    /// BackgroundService class for consuming messages from an Amazon SQS queue.
+    /// It extends BackgroundService, which is suitable for long-running tasks.
     /// </summary>
     public class QueueConsumerService : BackgroundService
     {
@@ -30,14 +33,17 @@ namespace Customer.Consumer.Api
             _period = TimeSpan.FromSeconds(_queueSettings.PollingPeriod);
         }
 
+        // ExecuteAsync method is overridden to perform the main background service logic
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using PeriodicTimer timer = new PeriodicTimer(_period);
+            // Continue processing until cancellation is requested or an exception occurs
             while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
             {
                 // Retrieve the URL of the specified queue
                 var queueUrlResponse = await _amazonSQS.GetQueueUrlAsync(_queueSettings.Name, stoppingToken);
 
+                // Create a request to receive messages from the queue
                 ReceiveMessageRequest receiveMessageRequest = CreateMessageRequest(queueUrlResponse);
 
                 // Receive messages from the queue
@@ -47,6 +53,7 @@ namespace Customer.Consumer.Api
 
                 foreach (var message in response.Messages)
                 {
+                    // Extract message type from message attributes
                     string messageType = message.MessageAttributes["MessageType"].StringValue;
                     if (string.IsNullOrEmpty(messageType))
                     {
@@ -61,6 +68,7 @@ namespace Customer.Consumer.Api
                     }
                     else
                     {
+                        // Deserialize the message and send it to the mediator for processing
                         ISqsMessage sqsMessage = (JsonSerializer.Deserialize(message.Body, type) as ISqsMessage)!;
                         try
                         {
@@ -71,12 +79,16 @@ namespace Customer.Consumer.Api
                             _logger.LogError(ex, "Message failed during processing.");
                             continue;
                         }
+                        // Delete the processed message from the queue
                         await _amazonSQS.DeleteMessageAsync(queueUrlResponse.QueueUrl, message.ReceiptHandle, stoppingToken);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Helper method to create a request to receive messages from the queue
+        /// </summary>
         private static ReceiveMessageRequest CreateMessageRequest(GetQueueUrlResponse queueUrlResponse)
         {
             // Create a request to receive messages from the queue
