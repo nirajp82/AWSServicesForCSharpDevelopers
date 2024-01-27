@@ -3,6 +3,7 @@ Amazon DynamoDB is a fully managed NoSQL database service provided by Amazon Web
 # Table of Contents
 
 1. [Introduction to DynamoDB](#introduction-to-dynamodb)
+2. [Partition and Sort key](#partition-and-sort-key)
 
 ### Introduction to DynamoDB:
 
@@ -33,3 +34,34 @@ Amazon DynamoDB is a fully managed NoSQL database service provided by Amazon Web
 6. **Security and Encryption**: DynamoDB supports encryption at rest and in transit to protect sensitive data. It integrates with AWS Identity and Access Management (IAM) for fine-grained access control and supports VPC endpoints for secure network communication.
 
 Overall, DynamoDB offers a highly scalable, high-performance, and fully managed NoSQL database solution that can handle a wide range of use cases, from low-latency applications to globally distributed systems.
+
+### Partition and Sort key:
+**Partition Key:**
+
+* It's the primary key attribute that determines how DynamoDB distributes data across partitions (physical storage units).
+* It's required for every table.
+* DynamoDB uses the partition key's value to calculate a hash, which maps the item to a specific partition.
+* Items with the same partition key value are stored together on the same partition.
+
+**Best Practices for Choosing a Partition Key:**
+
+* **Select an attribute that has a wide range of values.** This helps with even data distribution across partitions.
+* **Choose an attribute that is frequently used in access patterns.** This enables efficient retrieval of items.
+* **Consider using a composite partition key (partition key and sort key) if you need to query multiple items with the same partition key value in a specific order.**
+
+**Sort Key:**
+
+* It's an optional attribute that, when combined with the partition key, forms a composite primary key.
+* It's used to sort items within a partition in ascending order.
+* It allows for efficient range queries on items that have the same partition key value.
+
+**Best Practices for Choosing a Sort Key:**
+
+* **Select an attribute that naturally orders items within a partition.** For example, timestamps for events or usernames for user data.
+* **Choose an attribute that is frequently used in range queries.** For instance, retrieving items within a specific date range or alphabetically by username.
+* **Avoid using attributes with high cardinality or frequently updated values as sort keys.** This can lead to performance issues and increased costs.
+
+**Remember:**
+* The partition key and sort key (if used) are immutable once a table is created.
+* Choose them carefully based on your application's access patterns to ensure optimal performance and cost-efficiency.
+
