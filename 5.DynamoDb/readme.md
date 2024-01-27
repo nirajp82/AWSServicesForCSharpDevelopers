@@ -116,8 +116,16 @@ In both cases, DynamoDB ensures that the application can handle varying workload
 | **How Many**| Every table must have a primary key, which can be either: Simple primary key: A single attribute (partition key). Composite primary key: Two attributes (partition key and sort key). |You can create up to 5 LSIs per table. However, each LSI must share the same partition key as the table's primary key. They can only have a different sort key. | We can create up to 20 GSIs per table.GSIs can have a different partition key and sort key than the table's primary key. However, keep in mind that GSIs incur additional costs for read and write capacity units. |
 | **Best Practices** | Wide range of values, frequent access | Frequently queried attributes within partition | Frequently queried non-partition key attributes across table |
 
-
 ## Transaction vs Batch opeation
+| Feature | Transactions | Batch Operations |
+|---|---|---|
+|Purpose|Ideal for scenarios requiring strict consistency, critical operations and data integrity|Suitable for non-critical operations where partial completion is acceptable|
+| Atomicity | All-or-nothing - Ensures that all operations within a transaction either succeed or fail together, maintaining data consistency. | Not atomic - Operations within a batch are not guaranteed to succeed or fail together. Partial completion is possible.|
+| Isolation | Isolated execution | No isolation |
+| Scope | Can only operate on up to 25 items across a maximum of 10 tables within the same AWS account and region. | Can operate on up to 25 items per table, with a maximum of 100 items across multiple tables. |
+| Consistency | Strongly consistent | Eventually consistent |
+| Cost | Incur additional charges compared to batch operations | Generally less expensive than transactions. |
+
 ## How auto scaling work
 ## Cost Optimization best practice
 
