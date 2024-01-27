@@ -5,6 +5,8 @@ Amazon DynamoDB is a fully managed NoSQL database service provided by Amazon Web
 1. [Introduction to DynamoDB](#introduction-to-dynamodb)
 2. [Partition and Sort key](#partition-and-sort-key)
 3. [Understanding DynamoDB Capacity](#understanding-dynamodb-capacity)
+4. [Understanding DynamoDB Capacity](#partition-key-vs-local-secondary-index-vs-global-secondary-index)
+
 
 ## Introduction to DynamoDB:
 
@@ -99,3 +101,16 @@ Consider an e-commerce application that uses DynamoDB to store product catalog i
 - **On-Demand Capacity**: If the application uses on-demand capacity mode, DynamoDB automatically scales the table's capacity up or down based on the incoming requests. During promotional events, DynamoDB increases the provisioned throughput to accommodate the surge in traffic, and it scales down the capacity during normal hours to optimize costs.
 
 In both cases, DynamoDB ensures that the application can handle varying workloads while providing consistent performance and avoiding throttling of requests. The choice between provisioned and on-demand capacity depends on the application's traffic patterns, cost considerations, and the need for predictable throughput provisioning.
+
+## Partition Key vs Local Secondary Index vs Global Secondary Index
+
+| Feature | Partition Key | Local Secondary Index (LSI) | Global Secondary Index (GSI) |
+|---|---|---|---|
+| **Definition** |  Identifies the partition in which an item is stored, and queries are scoped to a single partition. | Index for efficient queries within a partition | Index for efficient queries across all partitions |
+| **Queries** | Determines where data is stored and quickly retrieved | Enables fast range queries and filtering within a partition | Enables queries on non-partition key attributes across all partitions |
+| **Scope** | Single partition | Single partition | Entire table |
+| **Cost** | No additional cost | No additional cost | Additional cost, charged per read and write capacity unit |
+| **Consistency** | Strongly consistent with table | Strongly consistent with table | Eventually consistent with table |
+| **How Many**| Every table must have a primary key, which can be either: Simple primary key: A single attribute (partition key). Composite primary key: Two attributes (partition key and sort key). |You can create up to 5 LSIs per table. However, each LSI must share the same partition key as the table's primary key. They can only have a different sort key. | 
+We can create up to 20 GSIs per table.GSIs can have a different partition key and sort key than the table's primary key. However, keep in mind that GSIs incur additional costs for read and write capacity units. |
+| **Best Practices** | Wide range of values, frequent access | Frequently queried attributes within partition | Frequently queried non-partition key attributes across table |
