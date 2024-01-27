@@ -5,7 +5,7 @@ Amazon DynamoDB is a fully managed NoSQL database service provided by Amazon Web
 1. [Introduction to DynamoDB](#introduction-to-dynamodb)
 2. [Partition and Sort key](#partition-and-sort-key)
 3. [Understanding DynamoDB Capacity](#understanding-dynamodb-capacity)
-4. [Understanding DynamoDB Capacity](#partition-key-vs-local-secondary-index-vs-global-secondary-index)
+4. [Partition Key vs Local Secondary Index vs Global Secondary Index](#partition-key-vs-local-secondary-index-vs-global-secondary-index)
 
 
 ## Introduction to DynamoDB:
