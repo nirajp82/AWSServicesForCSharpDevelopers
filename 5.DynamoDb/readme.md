@@ -4,8 +4,9 @@ Amazon DynamoDB is a fully managed NoSQL database service provided by Amazon Web
 
 1. [Introduction to DynamoDB](#introduction-to-dynamodb)
 2. [Partition and Sort key](#partition-and-sort-key)
+3. [Understanding DynamoDB Capacity](#understanding-dynamodb-capacity)
 
-### Introduction to DynamoDB:
+## Introduction to DynamoDB:
 
 1. **Fully Managed Service**: DynamoDB is a fully managed NoSQL database service, which means AWS takes care of administrative tasks such as hardware provisioning, setup, configuration, replication, backups, and scaling, allowing developers to focus on application development.
 
@@ -35,7 +36,7 @@ Amazon DynamoDB is a fully managed NoSQL database service provided by Amazon Web
 
 Overall, DynamoDB offers a highly scalable, high-performance, and fully managed NoSQL database solution that can handle a wide range of use cases, from low-latency applications to globally distributed systems.
 
-### Partition and Sort key:
+## Partition and Sort key:
 **Partition Key:**
 
 * It's the primary key attribute that determines how DynamoDB distributes data across partitions (physical storage units).
@@ -65,3 +66,36 @@ Overall, DynamoDB offers a highly scalable, high-performance, and fully managed 
 * The partition key and sort key (if used) are immutable once a table is created.
 * Choose them carefully based on your application's access patterns to ensure optimal performance and cost-efficiency.
 
+## Understanding DynamoDB Capacity
+
+**Capacity in DynamoDB refers to the amount of read and write operations that a table can handle per second.** It's a crucial concept to grasp when designing and managing your DynamoDB tables to ensure optimal performance and cost-efficiency.
+
+**Key Concepts:**
+
+- **Read Capacity Units (RCUs):** Measure the number of read operations (like `GetItem`, `Query`, `Scan`) a table can handle per second.
+- **Write Capacity Units (WCUs):** Measure the number of write operations (like `PutItem`, `UpdateItem`, `DeleteItem`) a table can handle per second.
+- **Provisioned Throughput:** You specify the desired RCUs and WCUs for a table when creating it. This allocates resources and ensures predictable performance.
+- **On-Demand Capacity Mode:** DynamoDB automatically scales capacity based on your application's needs, eliminating the need for manual provisioning.
+
+**How It Works (with Example):**
+
+1. **Provisioning Capacity:**
+   - With provisioned capacity mode, you specify the amount of read and write capacity units your table requires. Read capacity units (RCUs) represent the number of strongly consistent reads per second (or double that for eventually consistent reads), while write capacity units (WCUs) represent the number of writes per second.
+   - Suppose you anticipate that your application will need to perform 100 reads and 50 writes per second on average. You provision 100 RCUs and 50 WCUs for your DynamoDB table. Even if your actual workload fluctuates, DynamoDB ensures that you can perform up to 100 reads and 50 writes per second without being throttled.
+   
+2. **On-Demand (Consuming) Capacity:**
+   -  In on-demand capacity mode, DynamoDB automatically scales your table's capacity up or down based on the actual workload. You pay for the capacity you use on a per-request basis.
+   - With on-demand capacity mode, you don't need to specify provisioned capacities. DynamoDB automatically adjusts the throughput capacity in response to traffic spikes or drops, ensuring that your application can handle any workload without being throttled.
+   - Each read or write operation consumes a certain amount of capacity units.
+   - The amount consumed depends on:
+     - Item size
+     - Operation type (e.g., strongly consistent reads consume more RCUs than eventually consistent reads)
+
+**Example:**
+Consider an e-commerce application that uses DynamoDB to store product catalog information. During normal hours, the application serves a moderate number of user requests for browsing products, viewing details, and updating inventory. However, during promotional events or holiday seasons, the traffic to the application significantly increases.
+
+- **Provisioned Capacity**: If the application uses provisioned capacity mode, the developer provisions sufficient RCUs and WCUs to handle the anticipated peak traffic during promotional events. DynamoDB ensures that the table can handle the specified number of reads and writes per second without throttling.
+  
+- **On-Demand Capacity**: If the application uses on-demand capacity mode, DynamoDB automatically scales the table's capacity up or down based on the incoming requests. During promotional events, DynamoDB increases the provisioned throughput to accommodate the surge in traffic, and it scales down the capacity during normal hours to optimize costs.
+
+In both cases, DynamoDB ensures that the application can handle varying workloads while providing consistent performance and avoiding throttling of requests. The choice between provisioned and on-demand capacity depends on the application's traffic patterns, cost considerations, and the need for predictable throughput provisioning.
