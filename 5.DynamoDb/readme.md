@@ -6,7 +6,9 @@ Amazon DynamoDB is a fully managed NoSQL database service provided by Amazon Web
 2. [Partition and Sort key](#partition-and-sort-key)
 3. [Understanding DynamoDB Capacity](#understanding-dynamodb-capacity)
 4. [Partition Key vs Local Secondary Index vs Global Secondary Index](#partition-key-vs-local-secondary-index-vs-global-secondary-index)
-
+5. [Transaction vs Batch opeation](#transaction-vs-batch-opeation)
+6. [How auto scaling work](#how-auto-scaling-work)
+7. [Cost Optimization best practice](#cost-optimization-best-practice)
 
 ## Introduction to DynamoDB:
 
@@ -113,3 +115,10 @@ In both cases, DynamoDB ensures that the application can handle varying workload
 | **Consistency** | Strongly consistent with table | Strongly consistent with table | Eventually consistent with table |
 | **How Many**| Every table must have a primary key, which can be either: Simple primary key: A single attribute (partition key). Composite primary key: Two attributes (partition key and sort key). |You can create up to 5 LSIs per table. However, each LSI must share the same partition key as the table's primary key. They can only have a different sort key. | We can create up to 20 GSIs per table.GSIs can have a different partition key and sort key than the table's primary key. However, keep in mind that GSIs incur additional costs for read and write capacity units. |
 | **Best Practices** | Wide range of values, frequent access | Frequently queried attributes within partition | Frequently queried non-partition key attributes across table |
+
+
+## Transaction vs Batch opeation
+## How auto scaling work
+## Cost Optimization best practice
+
+
