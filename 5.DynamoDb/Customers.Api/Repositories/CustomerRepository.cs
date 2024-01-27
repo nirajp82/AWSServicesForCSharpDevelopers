@@ -1,6 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using Amazon.Runtime.Internal.Transform;
 using Customers.Api.Contracts.Data;
 using System.ComponentModel;
 using System.Net;
@@ -11,14 +12,14 @@ namespace Customers.Api.Repositories;
 
 public class CustomerRepository : ICustomerRepository
 {
-    private readonly IAmazonDynamoDB _dynamoDB;
+    private readonly IAmazonDynamoDB _dynamoDBClient;
     private const string _custTableName = "customers";
     private const string _orderTableName = "orders";
 
     // Constructor to initialize the DynamoDB client
     public CustomerRepository(IAmazonDynamoDB dynamoDB)
     {
-        _dynamoDB = dynamoDB;
+        _dynamoDBClient = dynamoDB;
     }
 
     // Create a new customer asynchronously
@@ -40,7 +41,7 @@ public class CustomerRepository : ICustomerRepository
         };
 
         // Execute PutItem request and return success status
-        var response = await _dynamoDB.PutItemAsync(createItemReq, cancellationToken);
+        var response = await _dynamoDBClient.PutItemAsync(createItemReq, cancellationToken);
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
 
@@ -58,11 +59,37 @@ public class CustomerRepository : ICustomerRepository
         });
 
         // Execute GetItem request and deserialize response to CustomerDto
-        var response = await _dynamoDB.GetItemAsync(getItemRequest, cancellationToken);
+        var response = await _dynamoDBClient.GetItemAsync(getItemRequest, cancellationToken);
         if (response.Item.Count == 0)
             return null;
 
         var itemDoc = Document.FromAttributeMap(response.Item);
+        return JsonSerializer.Deserialize<CustomerDto?>(itemDoc.ToJson());
+    }
+
+    public async Task<CustomerDto?> GetByEmail(string email, CancellationToken cancellationToken)
+    {
+        // Constructing a query request to DynamoDB to use LSI/GSI.
+        var queryRequest = new QueryRequest
+        {
+            TableName = _custTableName,
+            IndexName = "Email-id-GlobalSecondaryIndex",
+            KeyConditionExpression = "Email = :v_email",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+        {
+            { ":v_email", new AttributeValue{ S = email } }
+        }
+        };
+
+        // Executing the query asynchronously.
+        var response = await _dynamoDBClient.QueryAsync(queryRequest, cancellationToken);
+
+        // If no items are found, return null.
+        if (response.Items.Count == 0)
+            return null;
+
+        // Deserialize the retrieved item into a CustomerDto object.
+        var itemDoc = Document.FromAttributeMap(response.Items.FirstOrDefault());
         return JsonSerializer.Deserialize<CustomerDto?>(itemDoc.ToJson());
     }
 
@@ -76,7 +103,7 @@ public class CustomerRepository : ICustomerRepository
         };
 
         // Execute Scan request and deserialize items to CustomerDto list
-        var response = await _dynamoDB.ScanAsync(scanRequest, cancellationToken);
+        var response = await _dynamoDBClient.ScanAsync(scanRequest, cancellationToken);
         var customers = response.Items?.Select(item =>
         {
             var json = Document.FromAttributeMap(item).ToJson();
@@ -118,7 +145,7 @@ public class CustomerRepository : ICustomerRepository
         };
 
         // Execute PutItem request and return success status
-        var response = await _dynamoDB.PutItemAsync(updateItemReq, cancellationToken);
+        var response = await _dynamoDBClient.PutItemAsync(updateItemReq, cancellationToken);
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
 
@@ -140,7 +167,7 @@ public class CustomerRepository : ICustomerRepository
         };
 
         // Execute DeleteItem request and return success status
-        var response = await _dynamoDB.DeleteItemAsync(deleteItemRequest, cancellationToken);
+        var response = await _dynamoDBClient.DeleteItemAsync(deleteItemRequest, cancellationToken);
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
 
@@ -177,7 +204,7 @@ public class CustomerRepository : ICustomerRepository
                 - Batch operations do not support transactional guarantees, meaning if one operation fails within the batch, 
                     the others may still succeed.
          */
-        var response = await _dynamoDB.BatchWriteItemAsync(batchItemRequest, cancellationToken);
+        var response = await _dynamoDBClient.BatchWriteItemAsync(batchItemRequest, cancellationToken);
 
         // Return true if the batch operation was successful
         return response.HttpStatusCode == HttpStatusCode.OK;
@@ -258,11 +285,10 @@ public class CustomerRepository : ICustomerRepository
         };
 
         // Execute the transactional write operation asynchronously
-        var response = await _dynamoDB.TransactWriteItemsAsync(transactionWriteRequest, cancellationToken);
+        var response = await _dynamoDBClient.TransactWriteItemsAsync(transactionWriteRequest, cancellationToken);
 
         // Return true if the batch operation was successful
         return response.HttpStatusCode == HttpStatusCode.OK;
     }
-
     #endregion
 }

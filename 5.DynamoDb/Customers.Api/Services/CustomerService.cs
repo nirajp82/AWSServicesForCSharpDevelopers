@@ -45,6 +45,12 @@ public class CustomerService : ICustomerService
         return customerDto?.ToCustomer();
     }
 
+    public async Task<Customer?> GetByEmail(string email, CancellationToken cancellationToken)
+    {
+        var customerDto = await _customerRepository.GetByEmail(email, cancellationToken);
+        return customerDto?.ToCustomer();
+    }
+
     public async Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken)
     {
         var customerDtos = await _customerRepository.GetAllAsync(cancellationToken);

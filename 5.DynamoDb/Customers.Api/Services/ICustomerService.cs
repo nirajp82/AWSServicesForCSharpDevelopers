@@ -10,6 +10,8 @@ public interface ICustomerService
 
     Task<Customer?> GetAsync(Guid id, CancellationToken cancellationToken);
 
+    Task<Customer?> GetByEmail(string email, CancellationToken cancellationToken);
+
     Task<IEnumerable<Customer>> GetAllAsync(CancellationToken cancellationToken);
 
     Task<bool> UpdateAsync(Customer customer, DateTime requestStarted, CancellationToken cancellationToken);
@@ -17,5 +19,6 @@ public interface ICustomerService
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 
     Task<bool> ProcessCustomerBatchAsync(IEnumerable<CustomerBatchRequest> batch, CancellationToken cancellationToken);
-    Task<bool> CreateOrderAsync(CustomerOrderRequest custOrderRequest, CancellationToken cancellationToken);
+    
+    Task<bool> CreateOrderAsync(CustomerOrderRequest custOrderRequest, CancellationToken cancellationToken);  
 }

@@ -41,7 +41,21 @@ public class CustomerController : ControllerBase
         var customerResponse = customer.ToCustomerResponse();
         return Ok(customerResponse);
     }
-    
+
+    [HttpGet("GetByEmail/{email}")]
+    public async Task<IActionResult> GetByEmail([FromRoute] string email, CancellationToken cancellationToken)
+    {
+        var customer = await _customerService.GetByEmail(email, cancellationToken);
+
+        if (customer is null)
+        {
+            return NotFound();
+        }
+
+        var customerResponse = customer.ToCustomerResponse();
+        return Ok(customerResponse);
+    }
+
     [HttpGet()]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
