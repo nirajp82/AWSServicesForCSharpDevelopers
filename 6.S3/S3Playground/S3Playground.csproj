@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -7,15 +7,16 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
-    <ItemGroup>
-      <None Remove="movies.csv" />
-      <Content Include="movies.csv">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
+	<ItemGroup>
+		<None Remove="movies.csv" />
+		<Content Include="movies.csv">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="AWSSDK.S3" Version="3.7.305.17" />
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AWSSDK.S3" Version="3.7.305.17" />
+		<PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.29" />
+	</ItemGroup>
 
 </Project>

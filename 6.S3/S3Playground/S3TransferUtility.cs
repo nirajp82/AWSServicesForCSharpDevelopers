@@ -39,7 +39,7 @@ internal class S3TransferUtility
     public async Task DownloadAsync()
     {
         IAmazonS3 s3Client = new AmazonS3Client();
-        using var transferUtility = new TransferUtility();
+        using var transferUtility = new TransferUtility(s3Client);
         try
         {
             await transferUtility.DownloadAsync(fileName, bucketName, fileName);
