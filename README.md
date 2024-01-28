@@ -113,9 +113,7 @@ When working on a local development machine, you can use the AWS CLI to configur
 
 When running your application on an EC2 instance, IAM roles can be associated with the instance, and your code will automatically pick up the credentials.
 
-1. **
-
-Create IAM Role for EC2:**
+1. **Create IAM Role for EC2:**
    - In the AWS Management Console, navigate to IAM.
    - Create an IAM role with the necessary permissions (e.g., `AmazonSNSFullAccess`).
 2. **Assign IAM Role to EC2 Instance:**
