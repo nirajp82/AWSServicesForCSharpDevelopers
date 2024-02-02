@@ -11,6 +11,21 @@ namespace S3Playground
         const string bucketName = "npawstraining";
         const string fileName = "movies.csv";
 
+        public async Task DownloadAsync()
+        {
+            var credentials = await GetSTSCredential();
+            IAmazonS3 s3Client = new AmazonS3Client(credentials);
+            using var transferUtility = new TransferUtility(s3Client);
+            try
+            {
+                await transferUtility.DownloadAsync(fileName, bucketName, fileName);
+                Console.WriteLine("File downloaded successfully.");
+            }
+            catch (AmazonS3Exception e)
+            {
+                Console.WriteLine("Error uploading file: {0}", e.Message);
+            }
+        }
 
         private async Task<AWSCredentials> GetSTSCredential()
         {
@@ -44,22 +59,6 @@ namespace S3Playground
                 // Handle exceptions appropriately, e.g., log errors and potentially rethrow
                 Console.Error.WriteLine("Error assuming role: {0}", ex.Message);
                 throw;
-            }
-        }
-
-        private async Task DownloadAsync()
-        {
-            var credentials = await GetSTSCredential();
-            IAmazonS3 s3Client = new AmazonS3Client(credentials);
-            using var transferUtility = new TransferUtility(s3Client);
-            try
-            {
-                await transferUtility.DownloadAsync(fileName, bucketName, fileName);
-                Console.WriteLine("File downloaded successfully.");
-            }
-            catch (AmazonS3Exception e)
-            {
-                Console.WriteLine("Error uploading file: {0}", e.Message);
             }
         }
     }

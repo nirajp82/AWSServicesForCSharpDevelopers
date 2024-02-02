@@ -1,9 +1,12 @@
 using Amazon.DynamoDBv2;
+using Amazon.S3;
 using Customers.Api.Repositories;
 using Customers.Api.Services;
 using Customers.Api.Validation;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Net.Http.Headers;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -14,11 +17,20 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 var config = builder.Configuration;
 config.AddEnvironmentVariables("CustomersApi_");
 
-builder.Services.AddControllers().AddFluentValidation(x =>
+//builder.Services.AddControllers().AddFluentValidation(x =>
+//{
+//    x.RegisterValidatorsFromAssemblyContaining<Program>();
+//    x.DisableDataAnnotationsValidation = true;
+//});
+builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    x.RegisterValidatorsFromAssemblyContaining<Program>();
-    x.DisableDataAnnotationsValidation = true;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -26,6 +38,8 @@ builder.Services.AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>();
 builder.Services.AddSingleton<ICustomerRepository, CustomerRepository>();
 builder.Services.AddSingleton<ICustomerService, CustomerService>();
 builder.Services.AddSingleton<IGitHubService, GitHubService>();
+builder.Services.AddSingleton<IAmazonS3, AmazonS3Client>();
+builder.Services.AddSingleton<ICustomerImageService, CustomerImageService>();
 
 builder.Services.AddHttpClient("GitHub", httpClient =>
 {
