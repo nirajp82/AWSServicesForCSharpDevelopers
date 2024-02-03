@@ -5,6 +5,7 @@
 2. [Add a Resource-Based Policy to the S3 Bucket in Account A](#step-2-add-a-resource-based-policy-to-the-s3-bucket-in-account-a)
 3. [Configure Access from Account B](#step-3-configure-access-from-account-b)
 4. [Access the S3 Bucket from Account B](#step-4-access-the-s3-bucket-from-account-b)
+5. [Sample code](#Sample-code)
 
 ---
 
@@ -69,3 +70,96 @@ Replace `<Account B ID>` with the AWS account ID of Account B, and `<Your Bucket
 ## Step 4: Access the S3 Bucket from Account B
 1. Use the IAM role created in Account B to assume the role in Account A that allows access to the S3 bucket.
 2. Once the role is assumed, users, applications, or services in Account B can access the S3 bucket in Account A based on the permissions granted by the resource-based policy.
+
+## Step 5: Sample code
+If the code is running on a VM outside of AWS and does not have programmatic access to Account A, but it does have programmatic access to Account B, you can use the AWS Security Token Service (STS) to assume a role in Account B that has permissions to access resources in Account A via the resource-based policy.
+
+Here's how you can accomplish this:
+
+1. **Assume a Role in Account B**:
+   - The code running on the VM needs to call the AssumeRole API to assume a role in Account B that has permission to access the S3 bucket in Account A.
+
+2. **Retrieve Temporary Credentials**:
+   - After successfully assuming the role in Account B, the AssumeRole API returns temporary security credentials.
+
+3. **Use Temporary Credentials to Access S3 in Account A**:
+   - With the temporary credentials obtained from assuming the role in Account B, the code can create an S3 client and access the S3 bucket in Account A as per the permissions granted by the resource-based policy.
+
+Here's a general outline of the steps:
+
+```csharp
+using Amazon;
+using Amazon.Runtime;
+using Amazon.SecurityToken;
+using Amazon.SecurityToken.Model;
+using Amazon.S3;
+using Amazon.S3.Model;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Set up the AWS credentials for programmatic access to Account B
+        var credentials = new BasicAWSCredentials("AccessKeyForAccountB", "SecretKeyForAccountB");
+
+        // Create an STS client with the credentials for Account B
+        var stsClient = new AmazonSecurityTokenServiceClient(credentials, RegionEndpoint.USWest2); // Change the region accordingly
+
+        // Specify the ARN of the IAM role in Account B that allows access to Account A's S3 bucket
+        string roleToAssumeArn = "arn:aws:iam::AccountB-ID:role/RoleName"; // Change this to the ARN of your IAM role in Account B
+
+        // Create the request to assume the role in Account B
+        var assumeRoleRequest = new AssumeRoleRequest
+        {
+            RoleArn = roleToAssumeArn,
+            RoleSessionName = "AssumedRoleSession"
+        };
+
+        // Assume the role in Account B
+        var assumeRoleResponse = stsClient.AssumeRoleAsync(assumeRoleRequest).GetAwaiter().GetResult();
+
+        // Retrieve the temporary credentials from the AssumeRole response
+        var temporaryCredentials = assumeRoleResponse.Credentials;
+
+        // Create an S3 client with the temporary credentials
+        var s3Client = new AmazonS3Client(temporaryCredentials, RegionEndpoint.USWest2); // Change the region accordingly
+
+        // Specify the bucket name and object key in Account A
+        string bucketName = "AccountA-S3-Bucket";
+        string keyName = "your-object-key";
+
+        // Retrieve the object from the S3 bucket in Account A
+        var getObjectRequest = new GetObjectRequest
+        {
+            BucketName = bucketName,
+            Key = keyName
+        };
+
+        try
+        {
+            // Get the object using the temporary credentials
+            using (var response = s3Client.GetObjectAsync(getObjectRequest).GetAwaiter().GetResult())
+            {
+                // Process the object response
+                using (var responseStream = response.ResponseStream)
+                {
+                    using (var reader = new System.IO.StreamReader(responseStream))
+                    {
+                        string content = reader.ReadToEnd();
+                        Console.WriteLine("Content of the object:");
+                        Console.WriteLine(content);
+                    }
+                }
+            }
+        }
+        catch (AmazonS3Exception ex)
+        {
+            Console.WriteLine($"Error accessing S3 object: {ex.Message}");
+        }
+    }
+}
+```
+
+Make sure to replace the placeholders `AccessKeyForAccountB`, `SecretKeyForAccountB`, `AccountB-ID`, `RoleName`, `AccountA-S3-Bucket`, and `your-object-key` with the actual values corresponding to your AWS environment.
+
+This approach allows the code running on the VM to use the programmatic access it has to Account B to assume a role in Account B that has permission to access the S3 bucket in Account A through the resource-based policy.
