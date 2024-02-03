@@ -6,8 +6,7 @@ In Amazon Web Services (AWS), there are several options available for enabling c
    - The source account then grants permissions to its users, applications, or services by assuming the IAM role in the target account.
    - This approach provides granular control over access permissions and allows for temporary access via IAM role assumption.
    -  IAM Cross-Account Roles are used to delegate access across AWS accounts at the IAM level.
-   - For more details: https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/9.CrossAccount/02AccessUsingIAMRole.md
-
+   - For more details: https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/9.CrossAccount/01_AccessUsingIAMRole.md
 
 2. **Resource-Based Policies**:
    - Many AWS services support resource-based policies that allow you to grant cross-account access to specific AWS resources.
