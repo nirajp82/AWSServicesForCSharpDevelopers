@@ -5,13 +5,17 @@ In Amazon Web Services (AWS), there are several options available for enabling c
    - You can create an IAM role in the target account and define permissions that specify which actions the role can perform on which resources.
    - The source account then grants permissions to its users, applications, or services by assuming the IAM role in the target account.
    - This approach provides granular control over access permissions and allows for temporary access via IAM role assumption.
-   - Resource-Based Policies: Resource-based policies are attached directly to AWS resources such as Amazon S3 buckets, SQS queues, SNS topics, and Lambda functions. They define who can access the resource and what actions they can perform on it.
+   -  IAM Cross-Account Roles are used to delegate access across AWS accounts at the IAM level.
+   - For more details: https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/9.CrossAccount/02AccessUsingIAMRole.md
+
 
 2. **Resource-Based Policies**:
    - Many AWS services support resource-based policies that allow you to grant cross-account access to specific AWS resources.
    - For example, Amazon S3 buckets, Amazon SQS queues, and Amazon SNS topics can have resource policies attached to them to specify which AWS accounts or IAM entities have permission to access them.
    - By configuring resource-based policies, you can control access to your resources at a fine-grained level.
-   - For more details: https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/9.CrossAccount/02AccessUsingIAMRole.md
+   - Resource-Based Policies: Resource-based policies are attached directly to AWS resources such as Amazon S3 buckets, SQS queues, SNS topics, and Lambda functions. They define who can access the resource and what actions they can perform on it.
+   - Resource-Based Policies: Resource-based policies apply directly to individual AWS resources and define access permissions for that specific resource. They are scoped to the resource they are attached to.
+
 
 3. **AWS Resource Access Manager (RAM)**:
    - AWS RAM allows you to share AWS resources (such as Amazon S3 buckets, Amazon Aurora databases, and Amazon Redshift clusters) across AWS accounts within an AWS organization or individually.
