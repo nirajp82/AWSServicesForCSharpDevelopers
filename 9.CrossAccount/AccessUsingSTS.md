@@ -18,7 +18,7 @@ This guide outlines the steps to enable cross-account communication between an E
 - Select "Create role".
 - Choose "Another AWS account" as the trusted entity.
 - Enter the Account ID of Account "B".
-- Enable the option to Require external ID.
+- Enable the option to Require external ID. External ID adds an extra layer of security by requiring both the role ARN and the external ID to match for successful role assumption. However, emphasize the importance of keeping the external ID confidential and consider suggesting methods for secure storage and rotation.
 - Enter the External ID, which is a unique identifier agreed upon between Account "A" and Account "B".
 - Attach the "AmazonKinesisFirehoseFullAccess" policy (or a custom policy with necessary permissions) to this role.
 
@@ -192,3 +192,7 @@ class Program
 This code assumes that you have an IAM role in Account "A" with the necessary permissions to put records into the Amazon Kinesis Data Firehose delivery stream. Additionally, it assumes that you have set up the trust relationship and the necessary IAM policies between Account "A" and Account "B" as outlined in the previous steps.
 
 Replace placeholders like `ACCOUNT_A_ID`, `ROLE_NAME`, `YOUR_EXTERNAL_ID`, and `YOUR_FIREHOSE_DELIVERY_STREAM_NAME` with actual values specific to your AWS accounts and resources.
+
+References:
+https://www.hava.io/blog/what-is-aws-security-token-service-sts
+https://spacelift.io/blog/aws-sts#how-does-aws-sts-work
