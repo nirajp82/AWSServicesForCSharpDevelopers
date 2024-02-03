@@ -14,7 +14,7 @@ In Amazon Web Services (AWS), there are several options available for enabling c
    - By configuring resource-based policies, you can control access to your resources at a fine-grained level.
    - Resource-Based Policies: Resource-based policies are attached directly to AWS resources such as Amazon S3 buckets, SQS queues, SNS topics, and Lambda functions. They define who can access the resource and what actions they can perform on it.
    - Resource-Based Policies: Resource-based policies apply directly to individual AWS resources and define access permissions for that specific resource. They are scoped to the resource they are attached to.
-
+- For more details: https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/9.CrossAccount/02_ResourceBasedPolicy.md
 
 3. **AWS Resource Access Manager (RAM)**:
    - AWS RAM allows you to share AWS resources (such as Amazon S3 buckets, Amazon Aurora databases, and Amazon Redshift clusters) across AWS accounts within an AWS organization or individually.
