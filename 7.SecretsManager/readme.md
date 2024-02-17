@@ -15,7 +15,7 @@
     - [Integration with AWS Services](#integration-with-aws-services-1)
     - [Fine-grained Access Control](#fine-grained-access-control)
     - [Audit logging](#audit-logging)
-4. [types of secrets](#types-of-secrets)     
+4. [Types of secrets](#types-of-secrets)     
 6. [Real-World Use Cases](#real-world-use-cases)
     - [Database Credentials Management](#database-credentials-management)
     - [API Key Management](#api-key-management)
