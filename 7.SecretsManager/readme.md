@@ -15,7 +15,8 @@
     - [Integration with AWS Services](#integration-with-aws-services-1)
     - [Fine-grained Access Control](#fine-grained-access-control)
     - [Audit logging](#audit-logging)
-4. [Types of secrets](#types-of-secrets)     
+4. [Versioning](#Versioning)
+5. [Types of secrets](#types-of-secrets)     
 6. [Real-World Use Cases](#real-world-use-cases)
     - [Database Credentials Management](#database-credentials-management)
     - [API Key Management](#api-key-management)
@@ -59,6 +60,50 @@ Here's an overview of AWS Secrets Manager, how it works, its features, and real-
 5. **Fine-grained Access Control**: You can define fine-grained access control policies using IAM to restrict access to secrets based on roles, users, and groups and permissions.
    
 6. **Audit logging:** Track all access attempts and modifications made to secrets for enhanced security monitoring.
+
+### Versioning
+AWS Secrets Manager offers versioning capabilities to manage different iterations of secrets over time. Versioning enables you to track changes, roll back to previous versions if necessary, and maintain a historical record of secret modifications. Let's delve into AWS Secrets Manager versioning, including its default settings and different stages:
+
+### Versioning in AWS Secrets Manager:
+
+1. **Default Settings**:
+   - By default, AWS Secrets Manager automatically enables versioning for all secrets upon creation.
+   - Each time you update a secret, Secrets Manager creates a new version, incrementing the version number.
+   - The default version of a secret is the most recent one, which AWS Secrets Manager uses if no specific version is specified during retrieval.
+
+2. **Version Lifecycle**:
+   - **Creation**: When you initially create a secret, it becomes the first version (Version 1).
+   - **Updates**: Any subsequent updates to the secret create new versions, with the version number increasing sequentially.
+   - **Rotation**: Secrets Manager supports automatic rotation for certain types of secrets. During rotation, a new version is generated to reflect the updated credentials while preserving the older versions.
+   - **Retrieval**: You can specify the version of the secret you want to retrieve. If no version is specified, the default behavior is to retrieve the latest version.
+
+3. **Retaining Versions**:
+   - AWS Secrets Manager retains all versions of a secret by default.
+   - Retaining older versions ensures that you have a complete history of changes and allows you to roll back to a previous version if needed.
+
+4. **Deletion of Versions**:
+   - While AWS Secrets Manager retains versions by default, you have the option to delete specific versions.
+   - Deleting a version is irreversible, and once deleted, you cannot recover the version.
+   - Deleted versions do not impact the availability of other versions, and the secret remains accessible through its remaining versions.
+
+5. **Access Control**:
+   - IAM policies control access to secrets and their versions in AWS Secrets Manager.
+   - You can define fine-grained permissions to specify who can access, update, or delete versions of a secret.
+
+6. **Audit and Compliance**:
+   - Versioning facilitates auditing and compliance efforts by maintaining a comprehensive record of secret modifications and access.
+   - The audit trail provided by versioning helps in tracking changes, understanding usage patterns, and ensuring adherence to security policies and regulatory requirements.
+
+### Different Stages in Versioning:
+
+1. **Active Version (AWSCURRENT)**: The latest version of a secret is considered the active version by default. AWS Secrets Manager uses the active version when retrieving the secret if no specific version is specified.
+
+2. **Previous Versions (AWSPREVIOUS)**: Older versions of a secret are retained for historical reference. While they are not the active version, they remain accessible and can be retrieved if required.
+   
+3. **Pending Versions (AWSPENDING)**: This label is used during secret rotation. It identifies the newly created version before it becomes the current version.
+![image](https://github.com/nirajp82/AWSServicesForCSharpDevelopers/assets/61636643/2ba58987-682a-40ad-94e9-0fa4f1394380)
+
+In conclusion, versioning in AWS Secrets Manager is a critical feature that enhances secret management by providing visibility, traceability, and control over changes to secrets. By understanding how versioning works and its default settings, you can effectively manage secrets and ensure the security and integrity of your AWS environment.
 
 ### Types of secrets
 These secrets can vary based on the needs of your applications and infrastructure. Here are different types of secrets commonly managed using AWS Secrets Manager:
