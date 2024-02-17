@@ -1,5 +1,6 @@
 using Amazon.DynamoDBv2;
 using Amazon.S3;
+using Amazon.S3.Transfer;
 using Customers.Api.Repositories;
 using Customers.Api.Services;
 using Customers.Api.Validation;
@@ -39,7 +40,8 @@ builder.Services.AddSingleton<ICustomerRepository, CustomerRepository>();
 builder.Services.AddSingleton<ICustomerService, CustomerService>();
 builder.Services.AddSingleton<IGitHubService, GitHubService>();
 builder.Services.AddSingleton<IAmazonS3, AmazonS3Client>();
-builder.Services.AddSingleton<ICustomerImageService, CustomerImageService>();
+builder.Services.AddSingleton<ICustomerImageService, CustomerImageServiceS3Client>();
+builder.Services.AddSingleton<ITransferUtility, TransferUtility>();
 
 builder.Services.AddHttpClient("GitHub", httpClient =>
 {

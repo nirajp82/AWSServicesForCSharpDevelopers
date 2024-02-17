@@ -37,6 +37,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3Playground", "6.S3\S3Play
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Customers.Api", "6.S3\Customers.Api\Customers.Api.csproj", "{84375B7A-6C81-48F8-A5F8-3AADC004F10A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Weather.Api", "..\..\Users\Edu4K\Downloads\AWSCode\7.1\aws-fundamentals-final-master\7.SecretsManager\Weather.Api\Weather.Api.csproj", "{CAE7986F-F294-4417-BAB3-FFCAC2A07675}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecretsManager.ConApp", "7.SecretsManager\SecretsManager.ConApp\SecretsManager.ConApp.csproj", "{E50FDE1A-6509-4A82-8837-2E2C77FC15C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,14 @@ Global
 		{84375B7A-6C81-48F8-A5F8-3AADC004F10A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84375B7A-6C81-48F8-A5F8-3AADC004F10A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84375B7A-6C81-48F8-A5F8-3AADC004F10A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAE7986F-F294-4417-BAB3-FFCAC2A07675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAE7986F-F294-4417-BAB3-FFCAC2A07675}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAE7986F-F294-4417-BAB3-FFCAC2A07675}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAE7986F-F294-4417-BAB3-FFCAC2A07675}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E50FDE1A-6509-4A82-8837-2E2C77FC15C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E50FDE1A-6509-4A82-8837-2E2C77FC15C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E50FDE1A-6509-4A82-8837-2E2C77FC15C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E50FDE1A-6509-4A82-8837-2E2C77FC15C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,6 +115,8 @@ Global
 		{C61F3276-415A-4616-9D58-FC2B0936EFCC} = {2C17779A-FD5B-4980-BEB0-4A19912178B7}
 		{F6D2795E-E0DF-4DCD-BE9E-F30B4D8B3B38} = {6CC73189-9356-4EE7-B061-73D9395C30AC}
 		{84375B7A-6C81-48F8-A5F8-3AADC004F10A} = {6CC73189-9356-4EE7-B061-73D9395C30AC}
+		{CAE7986F-F294-4417-BAB3-FFCAC2A07675} = {8D27D9CA-8D14-4CD6-9827-A0837CFB03C3}
+		{E50FDE1A-6509-4A82-8837-2E2C77FC15C8} = {8D27D9CA-8D14-4CD6-9827-A0837CFB03C3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {947232E2-1B49-4C9B-83C8-5E134ED1A93F}
