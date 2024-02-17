@@ -23,7 +23,6 @@ internal class SecretsManagerUtil
 
         // Delete the secret
         //await DeleteSecretAsync(secretsManagerClient);
-
         // Create a new secret
         await CreateSecretAsync(secretsManagerClient);
 
