@@ -1,3 +1,29 @@
+# Table of Contents
+
+1. [Introduction to Amazon S3](#introduction-to-amazon-s3)
+2. [Key Features and Concepts](#key-features-and-concepts)
+    - [Scalability](#scalability)
+    - [Durability and Availability](#durability-and-availability)
+    - [Data Protection](#data-protection)
+    - [Versioning](#versioning)
+    - [Lifecycle Policies](#lifecycle-policies)
+    - [Cross-Region Replication (CRR)](#cross-region-replication-crr)
+    - [Event Notifications](#event-notifications)
+    - [Multipart Upload](#multipart-upload)
+    - [Static Website Hosting](#static-website-hosting)
+    - [Analytics and Metrics](#analytics-and-metrics)
+3. [S3 Versioning](#s3-versioning)
+    - [S3 Versioning Mechanics](#s3-versioning-mechanics)
+    - [Operations with Versioning Enabled](#operations-with-versioning-enabled)
+    - [Replication and Versioning](#replication-and-versioning)
+4. [S3 Event Notifications](#s3-event-notifications)
+    - [How S3 Event Notifications Work](#how-s3-event-notifications-work)
+    - [Subscriber Options](#subscriber-options)
+    - [Event Notification Payload](#event-notification-payload)
+    - [Example Use Cases](#example-use-cases)
+    - [Benefits of S3 Event Notifications](#benefits-of-s3-event-notifications)
+    - [Things to Consider](#things-to-consider)
+
 Amazon Simple Storage Service (S3) is a scalable object storage service provided by Amazon Web Services (AWS). It is designed to store and retrieve any amount of data from anywhere on the web. Here are some key features and concepts of Amazon S3:
 
 1. **Scalability**: S3 is highly scalable, allowing you to store and retrieve virtually unlimited amounts of data. It automatically scales to accommodate growing storage needs without requiring any upfront capacity planning.
