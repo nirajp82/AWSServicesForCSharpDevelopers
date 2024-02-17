@@ -1,3 +1,32 @@
+# Table of Contents
+
+1. [Introduction to AWS Secrets Manager](#introduction-to-aws-secrets-manager)
+2. [How AWS Secrets Manager Works](#how-aws-secrets-manager-works)
+    - [Secret Storage](#secret-storage)
+    - [Encryption](#encryption)
+    - [Access Control](#access-control)
+    - [Integration with AWS Services](#integration-with-aws-services)
+    - [Automatic Rotation](#automatic-rotation)
+    - [Auditing and Logging](#auditing-and-logging)
+3. [Key Features of AWS Secrets Manager](#key-features-of-aws-secrets-manager)
+    - [Centralized Management](#centralized-management)
+    - [Secure Storage](#secure-storage)
+    - [Automatic Rotation](#automatic-rotation-1)
+    - [Integration with AWS Services](#integration-with-aws-services-1)
+    - [Fine-grained Access Control](#fine-grained-access-control)
+    - [Audit logging](#audit-logging)
+4. [Real-World Use Cases](#real-world-use-cases)
+    - [Database Credentials Management](#database-credentials-management)
+    - [API Key Management](#api-key-management)
+    - [Secret Rotation](#secret-rotation)
+    - [Application Configuration Management](#application-configuration-management)
+    - [Compliance and Security](#compliance-and-security)
+    - [Serverless Application Development](#serverless-application-development)
+    - [Encryption keys](#encryption-keys)
+5. [Benefits of using AWS Secrets Manager](#benefits-of-using-aws-secrets-manager)
+
+### Introduction to AWS Secrets Manager
+
 AWS Secrets Manager is a service provided by Amazon Web Services (AWS) that helps you securely store, manage, and retrieve sensitive information such as API keys, passwords, and database credentials. It enables you to centralize and automate the management of secrets across your AWS infrastructure and applications. 
 
 Here's an overview of AWS Secrets Manager, how it works, its features, and real-world use cases:
