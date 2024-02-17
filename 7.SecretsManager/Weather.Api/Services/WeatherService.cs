@@ -7,6 +7,7 @@ namespace Weather.Api.Services;
 public class WeatherService : IWeatherService
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    //IOptionsMonitor: Used for notifications when OpenWeatherApiSettings instances change.
     private readonly IOptionsMonitor<OpenWeatherApiSettings> _weatherApiOptions;
 
     public WeatherService(IHttpClientFactory httpClientFactory, 
@@ -22,12 +23,11 @@ public class WeatherService : IWeatherService
         var httpClient = _httpClientFactory.CreateClient();
         
         var weatherResponse = await httpClient.GetAsync(url);
-        if (weatherResponse.StatusCode == HttpStatusCode.NotFound)
+        if (weatherResponse.IsSuccessStatusCode)
         {
-            return null;
+            var weather = await weatherResponse.Content.ReadFromJsonAsync<WeatherResponse>();
+            return weather;
         }
-
-        var weather = await weatherResponse.Content.ReadFromJsonAsync<WeatherResponse>();
-        return weather;
+        return null;
     }
 }
