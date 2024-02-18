@@ -6,6 +6,7 @@
 
 The `aws lambda invoke` command allows you to invoke a Lambda function directly from the command line. Here's the updated syntax with the `--cli-binary-format` option:
 
+
 ```plaintext
 aws lambda invoke --function-name <function-name> --payload <payload> --cli-binary-format <format> <output-file>
 ```
