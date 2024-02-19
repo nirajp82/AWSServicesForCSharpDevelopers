@@ -19,7 +19,19 @@ While technically possible, using SNS directly as a trigger for Lambda functions
 * **No dead-letter queue (DLQ):** SNS doesn't have a native dead-letter queue (DLQ) for storing permanently failed messages. This makes it difficult to track and analyze errors or retry processing them later. SQS integrates seamlessly with DLQs, enabling you to identify and handle problematic messages effectively.
 * **Cost inefficiency:** SNS triggers Lambda functions for each individual message. This can be costly for high-volume workloads as each invocation incurs charges. SQS allows batching messages, triggering Lambda with a group of messages, reducing the number of invocations and lowering costs.
 * **Limited concurrency control:** When using SNS directly, Lambda's reserved concurrency setting isn't suitable due to potential over-polling of the queue. SQS offers specific settings like `MaximumConcurrency` for better control over Lambda invocations based on queue depth.
-
+* **Guaranteed Delivery:**
+   - SQS offers message persistence. Once a message is sent to an SQS queue, it remains there until a consumer processes it and deletes it.
+   - With SNS, if a subscriber is not available or unable to process a message at the time it is sent, the message may be lost.
+* **Backpressure Handling:**
+   - SQS can act as a buffer to handle bursts of messages. If your application experiences sudden spikes in message volume, SQS can absorb the load and ensure that messages are not lost.
+   - With SNS, if subscribers cannot keep up with the rate of messages being published, there's no built-in mechanism to handle backpressure.
+* **Retry and Error Handling:**
+   - SQS allows you to set up redrive policies and dead-letter queues for handling message processing failures and retries.
+   - SNS does not offer built-in retry mechanisms or dead-letter queues for handling failed message processing.
+* **Ordering and Processing Flexibility:**
+   - SQS allows you to preserve the order of messages within a queue if needed, ensuring that messages are processed in the order they are received.
+   - SNS does not guarantee message ordering since it's designed for pub/sub messaging and may deliver messages to subscribers in a different order than they were published.
+     
 **Benefits of using SQS as an intermediary:**
 
 * **Enhanced reliability and resilience:** SQS provides features like message visibility timeouts, retries, and DLQs, ensuring messages are processed even if your Lambda function encounters temporary issues.
