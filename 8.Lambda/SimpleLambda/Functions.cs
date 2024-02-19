@@ -9,8 +9,10 @@ using Amazon.Lambda.Annotations.APIGateway;
 
 namespace SimpleLambda;
 
+//cd C:\Projects\AWSServicesForCSharpDevelopers\8.Lambda\SimpleLambda
 //Deploy: dotnet lambda deploy-function SimpleLambda
 //Run: dotnet lambda invoke-function SimpleLambda --payload '{ ""Name"": ""ShreeRajShyamaji""}'
+//Debug: dotnet lambda-test-tool-6.0
 public class Functions
 {
     [LambdaFunction(Role = "MyLambda-role-2iccehky", MemorySize = 256, Timeout = 30)]

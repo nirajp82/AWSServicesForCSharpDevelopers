@@ -11,8 +11,9 @@ namespace SimpleHttpLambda;
 
 public class Functions
 {
+    //cd C:\Projects\AWSServicesForCSharpDevelopers\8.Lambda\SimpleHttpLambda
     //Deploy: dotnet lambda deploy-function SimpleHttpLambda
-
+    //Debug: dotnet lambda-test-tool-6.0
     /// <summary>
     /// A Lambda function to respond to HTTP Get methods from API Gateway
     /// </summary>
