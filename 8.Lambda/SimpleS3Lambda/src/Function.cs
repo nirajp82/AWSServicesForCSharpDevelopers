@@ -6,6 +6,7 @@ using Amazon.S3.Util;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Processing;
+using System;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -77,6 +78,8 @@ namespace SimpleS3Lambda
                     // Create a memory stream to store the resized image.
                     using var outStream = new MemoryStream();
 
+                    var fileNameAndExtension = GetFileNameWithExtension(s3Event.Object.Key, context);
+
                     // Load the image from the stream, resize it, and save the resized image to the output stream.
                     using (var image = await Image.LoadAsync(itemStream))
                     {
@@ -84,7 +87,7 @@ namespace SimpleS3Lambda
                         image.Mutate(x => x.Resize(500, 500, KnownResamplers.Lanczos3));
 
                         // Retrieve the original name of the image from the metadata.
-                        var originalName = response.Metadata["x-amz-meta-originalname"];
+                        var originalName = response.Metadata["x-amz-meta-originalname"] ?? $"{fileNameAndExtension.Item1}.{fileNameAndExtension.Item2}";
 
                         // Save the resized image to the output stream with the original image format.
                         await image.SaveAsync(outStream, image.DetectEncoder(originalName));
@@ -97,8 +100,8 @@ namespace SimpleS3Lambda
                         Key = s3Event.Object.Key,
                         Metadata = {
                             // Preserve the original name and extension in the metadata.
-                            ["x-amz-meta-originalname"] = response.Metadata["x-amz-meta-originalname"],
-                            ["x-amz-meta-extension"] = response.Metadata["x-amz-meta-extension"],
+                            ["x-amz-meta-originalname"] = response.Metadata["x-amz-meta-originalname"] ?? fileNameAndExtension.Item1,
+                            ["x-amz-meta-extension"] = response.Metadata["x-amz-meta-extension"]  ?? fileNameAndExtension.Item2,
                             // Set the flag indicating the image has been resized to true.
                             ["x-amz-meta-resized"] = true.ToString()
                         },
@@ -120,6 +123,18 @@ namespace SimpleS3Lambda
                     throw; // Re-throw the exception to ensure it's propagated correctly.
                 }
             }
+        }
+
+        private Tuple<string, string> GetFileNameWithExtension(string objectKey, ILambdaContext context)
+        {
+            string[] keyParts = objectKey.Split('/');
+            string filenameWithExtension = keyParts[keyParts.Length - 1]; // Get the last part of the key
+            //context.Logger.LogInformation($"FilenameWithExtension: {filenameWithExtension}");
+            string[] filenameParts = filenameWithExtension.Split('.');
+            string filename = filenameParts[0].ToLowerInvariant(); // Filename without extension
+            string extension = filenameParts.Length > 1 ? filenameParts[1].ToLowerInvariant() : ""; // Extension if available
+            context.Logger.LogInformation($"FilenameWithExtension: filename:{filename}, extension:{extension}");
+            return new Tuple<string, string>(filename, extension);
         }
     }
 }
