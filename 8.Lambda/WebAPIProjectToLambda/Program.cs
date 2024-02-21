@@ -1,6 +1,6 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//Add AWS Lambda integration for HTTP API Gateway events.
 builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 builder.Services.AddControllers();
