@@ -12,7 +12,7 @@ namespace CustomRuntimeLambda
         /// <param name="args"></param>
         private static async Task Main(string[] args)
         {
-            Func<string, ILambdaContext, string> handler = FunctionHandler;
+            Func<ILambdaContext, string> handler = FunctionHandler;
             await LambdaBootstrapBuilder.Create(handler, new DefaultLambdaJsonSerializer())
                 .Build()
                 .RunAsync();
@@ -25,12 +25,11 @@ namespace CustomRuntimeLambda
         /// https://github.com/aws/aws-lambda-dotnet#events
         /// and change the string input parameter to the desired event type.
         /// </summary>
-        /// <param name="input"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static string FunctionHandler(string input, ILambdaContext context)
+        public static string FunctionHandler(ILambdaContext context)
         {
-            return input.ToUpper();
+            return "This lambda function uses .net 7.0 runtime. Lambda only supports LTS .net runtime version (6.0, 8.0 etc..)";
         }
     }
 }
