@@ -46,3 +46,16 @@
 }
 ```
 **Note**: Make sre fun `function-handler` contains the name of the assembly and `function-runtime` has correct version supported by lambda. 
+
+### 4: Add `Amazon.Lambda.AspNetCoreServer.Hosting` nuget package to the project.
+
+### 5: Add AWS Lambda integration for HTTP API Gateway events.
+- Program.cs
+  ```cs
+	builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
+  ```
+### 6: Deploy function to the aws
+```dotnet lambda deploy-function WebAPIProjectToLambda```
+
+### 7: Test the function in browser
+https://{{AWSLambdaURL}}/WeatherForecast
