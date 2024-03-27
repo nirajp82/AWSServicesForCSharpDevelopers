@@ -2,7 +2,7 @@
 
 #### 1: Modify Project file and add following settings to project file.
 ```csproj
-<!--Start:: Following setting is copie to deply WebAPI project as AWS Lambda-->
+<!--Start:: Copy following settings to deploy WebAPI project as AWS Lambda-->
 <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
 <AWSProjectType>Lambda</AWSProjectType>
 <!-- This property makes the build directory similar to a publish directory
