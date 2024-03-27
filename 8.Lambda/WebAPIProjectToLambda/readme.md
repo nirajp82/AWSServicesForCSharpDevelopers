@@ -45,7 +45,7 @@
   "function-url-enable": true
 }
 ```
-**Note**: Make sre fun `function-handler` contains the name of the assembly and `function-runtime` has correct version supported by lambda. 
+**Note**: Make sure function `function-handler` attribute contains the actual name of the assembly and `function-runtime` has correct version supported by lambda. 
 
 ### 4: Add `Amazon.Lambda.AspNetCoreServer.Hosting` nuget package to the project.
 
