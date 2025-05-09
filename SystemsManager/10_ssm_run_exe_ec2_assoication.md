@@ -1,11 +1,3 @@
-Here's an updated and expanded version of the **guide** you asked for. It now includes:
-
-* Complete **C# code explanation**, especially for `CreateAssociationAsync`.
-* How to **set default parameters** in the SSM document so they are optional.
-* Line-by-line **code comments** to make everything easier to understand.
-
----
-
 # **📘 Run `.exe` on EC2 Using AWS Systems Manager (SSM) from ASP.NET Web Application**
 
 ## Goal:
