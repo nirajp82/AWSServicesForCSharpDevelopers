@@ -61,6 +61,7 @@ It compares current state with the desired state you define via documents. Then 
 ---
 
 ## Chapter 3: Understanding SSM Documents
+[Chapter 3 -Details](https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/SystemsManager/03_SSM_Doc_Intro.md)
 ### 📄 What Are SSM Documents?
 
 SSM Documents (also called **Run Command documents** or **Automation documents**) define *what actions* to perform on a target.
