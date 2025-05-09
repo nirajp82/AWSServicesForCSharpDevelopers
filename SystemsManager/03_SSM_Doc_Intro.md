@@ -133,140 +133,12 @@ AWS gives you many ready-to-use documents. A few common ones:
 Perfect — here's a **complete and clean rewrite** that brings all your elements together:
 
 ---
-## 🧾 **Custom SSM Document with Logging, Exit Code, and Error Capture**
-
-* **trigger** the `.exe` via a custom SSM document,
-* **return immediately** with the Command ID,
-* and later **check status** using that ID,
-
-then here's the **clean, non-blocking version** of the setup:
-
-## ✅ Updated Custom SSM Document (No `Wait`, No Output Capture)
-
-```json
-{
-  "schemaVersion": "2.2",
-  "description": "Fire-and-forget execution of an exe with params on EC2",
-  "parameters": {
-    "exePath": {
-      "type": "String",
-      "description": "Path to the exe",
-      "default": "C:\\Tools\\mytool.exe"
-    },
-    "mode": {
-      "type": "String",
-      "description": "Mode argument",
-      "default": "safe"
-    },
-    "logPath": {
-      "type": "String",
-      "description": "Log output path",
-      "default": "C:\\output.txt"
-    }
-  },
-  "mainSteps": [
-    {
-      "action": "aws:runPowerShellScript",
-      "name": "runExe",
-      "inputs": {
-        "runCommand": [
-          "$exePath = '{{ exePath }}'",
-          "$mode = '{{ mode }}'",
-          "$logPath = '{{ logPath }}'",
-
-          # Fire and forget — no waiting, no capture
-          "Start-Process -FilePath $exePath -ArgumentList \"--mode $mode\", \"--log $logPath\""
-        ]
-      }
-    }
-  ]
-}
-```
-
-## 💻 .NET Code to Send Command and Return `CommandId`
-
-```csharp
-using Amazon.SimpleSystemsManagement;
-using Amazon.SimpleSystemsManagement.Model;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-public class SsmCommandSender
-{
-    private readonly IAmazonSimpleSystemsManagement _ssm;
-
-    public SsmCommandSender()
-    {
-        // Initializes SSM client using default credential chain
-        _ssm = new AmazonSimpleSystemsManagementClient();
-    }
-
-    /// <summary>
-    /// Sends a command to run an .exe with params on EC2. Returns the Command ID immediately.
-    /// </summary>
-    public async Task<string> RunExecutableAsync(string instanceId)
-    {
-        var request = new SendCommandRequest
-        {
-            DocumentName = "RunExeWithoutWait", // Replace with your document's name
-            InstanceIds = new List<string> { instanceId },
-
-            // Optional: helpful label for auditing
-            Comment = "Trigger .exe tool run (non-blocking)",
-
-            Parameters = new Dictionary<string, List<string>>
-            {
-                { "exePath", new List<string> { "C:\\Tools\\mytool.exe" } },
-                { "mode", new List<string> { "safe" } },
-                { "logPath", new List<string> { "C:\\output.txt" } }
-            }
-        };
-
-        try
-        {
-            var response = await _ssm.SendCommandAsync(request);
-            var commandId = response.Command.CommandId;
-
-            Console.WriteLine($"✅ Command sent successfully. Command ID: {commandId}");
-            return commandId;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ Error sending command: {ex.Message}");
-            throw;
-        }
-    }
-}
-```
-
-## 🧪 Later: Check Status Using `CommandId`
-
-To monitor progress/status, you can call:
-
-```csharp
-var result = await _ssm.GetCommandInvocationAsync(new GetCommandInvocationRequest
-{
-    CommandId = commandId,
-    InstanceId = instanceId
-});
-Console.WriteLine($"Status: {result.Status}, Exit Code: {result.ResponseCode}");
-```
-
-### ✅ Summary
-
-| Feature               | Behavior                                  |
-| --------------------- | ----------------------------------------- |
-| `Start-Process`       | Fire-and-forget (`-NoNewWindow` not used) |
-| No `Wait`             | Does **not** block on execution           |
-| Returns `CommandId`   | So you can track execution later          |
-| No output/error files | Keeps it lightweight                      |
+---
 
 ## 🛠 **When You Should Use a Custom Document Instead of a Default One**
 
 Here’s a clear and practical breakdown of **🛠 When You Should Use a Custom SSM Document Instead of a Default Managed One** like `AWS-RunPowerShellScript` or `AWS-RunShellScript`:
 
----
 
 ### 🔧 Default Managed Documents Are Great When:
 
@@ -277,7 +149,6 @@ Here’s a clear and practical breakdown of **🛠 When You Should Use a Custom 
 | You’re okay with **manually constructing commands**                  | You have to build the full command-line yourself and pass it as a string.                 |
 | You’re doing **one-off troubleshooting or automation**               | These documents are easy to use from the console or API.                                  |
 
----
 
 ### 🛠 You Should Use a **Custom Document** When:
 
@@ -290,7 +161,153 @@ Here’s a clear and practical breakdown of **🛠 When You Should Use a Custom 
 | ✅ You need **clean integration** with `CreateAssociation`, `SendCommand`, or State Manager | Custom documents are treated as reusable objects.                       |
 
 ---
+## ✅ Custom SSM Document (JSON)  
 
+```json
+{
+  "schemaVersion": "2.2", // This defines the schema format version SSM expects
+  "description": "Run mytool.exe with parameters on demand",
+  "parameters": {
+    "exePath": {
+      "type": "String",
+      "description": "Full path to the executable (e.g., C:\\Tools\\mytool.exe)",
+      "default": "C:\\Tools\\mytool.exe"
+    },
+    "mode": {
+      "type": "String",
+      "description": "Execution mode for the tool",
+      "default": "safe"
+    },
+    "logPath": {
+      "type": "String",
+      "description": "Path where logs should be written",
+      "default": "C:\\output.txt"
+    }
+  },
+  "mainSteps": [
+    {
+      "action": "aws:runPowerShellScript", // Use PowerShell to run commands on Windows
+      "name": "runMyExe",
+      "inputs": {
+        "runCommand": [
+          // Assign parameters to local PowerShell variables
+          "$exePath = '{{ exePath }}'",
+          "$mode = '{{ mode }}'",
+          "$logPath = '{{ logPath }}'",
+
+          // Launch the EXE with parameters, don't wait for completion
+          "Start-Process -FilePath $exePath -ArgumentList '--mode', $mode, '--log', $logPath"
+        ]
+      }
+    }
+  ]
+}
+```
+
+### 🔍 Why this is important:
+
+* `Start-Process` is **asynchronous** — it doesn't wait for the `.exe` to finish (which you wanted).
+* You can trigger it **on demand** using `SendCommand`.
+* You **don't need to hard-code anything**; this document is reusable with new inputs anytime.
+
+
+## 🚀 C# Code to Trigger It (With Command ID Returned)
+
+```csharp
+using Amazon.SimpleSystemsManagement;
+using Amazon.SimpleSystemsManagement.Model;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+public class SsmOnDemandRunner
+{
+    private readonly IAmazonSimpleSystemsManagement _ssmClient;
+
+    public SsmOnDemandRunner()
+    {
+        // SSM client initialized using IAM credentials in your environment (Instance Profile, User, or Role)
+        _ssmClient = new AmazonSimpleSystemsManagementClient();
+    }
+
+    /// <summary>
+    /// Sends a command using your custom SSM document to run an exe file on a target EC2 instance.
+    /// </summary>
+    public async Task<string> RunExeViaSendCommandAsync(
+        string instanceId,        // The EC2 instance you want to run the command on
+        string exePath = null,    // Optional override for the exe path
+        string mode = null,       // Optional override for mode
+        string logPath = null     // Optional override for log output path
+    )
+    {
+        var parameters = new Dictionary<string, List<string>>();
+
+        // Only add parameter if it's not null — otherwise default in document will be used
+        if (exePath != null)
+            parameters["exePath"] = new List<string> { exePath };
+        if (mode != null)
+            parameters["mode"] = new List<string> { mode };
+        if (logPath != null)
+            parameters["logPath"] = new List<string> { logPath };
+
+        var request = new SendCommandRequest
+        {
+            DocumentName = "MyCustomExeRunner", // Must match the name of your custom SSM document
+            InstanceIds = new List<string> { instanceId }, // The EC2 instance(s) to target
+            Parameters = parameters,
+            Comment = "Trigger .exe run via SendCommand" // Optional comment for traceability
+        };
+
+        try
+        {
+            var response = await _ssmClient.SendCommandAsync(request);
+
+            Console.WriteLine($"✅ Command sent. Command ID: {response.Command.CommandId}");
+
+            // Return the Command ID so the caller can poll the command status later
+            return response.Command.CommandId;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Failed to send command: {ex.Message}");
+            return null;
+        }
+    }
+}
+```
+
+## 🧪 Optional: C# Code to Check Command Status Later
+
+```csharp
+public async Task CheckCommandStatusAsync(string commandId, string instanceId)
+{
+    var request = new GetCommandInvocationRequest
+    {
+        CommandId = commandId,
+        InstanceId = instanceId
+    };
+
+    var response = await _ssmClient.GetCommandInvocationAsync(request);
+
+    Console.WriteLine($"Status: {response.Status}"); // e.g., Pending, InProgress, Success, Failed
+    Console.WriteLine("StdOut:");
+    Console.WriteLine(response.StandardOutputContent);
+    Console.WriteLine("StdErr:");
+    Console.WriteLine(response.StandardErrorContent);
+}
+```
+
+## 💡 Final Summary
+
+| Feature                              | Implemented In                      |
+|  | -- |
+| Reusable parameterized `.exe` call   | Custom SSM Document                 |
+| Trigger **on demand**                | `SendCommandAsync()`                |
+| Do **not wait** for `.exe` to finish | `Start-Process` (no `-Wait`)        |
+| Capture status later                 | Command ID + `GetCommandInvocation` |
+| Safe defaults                        | Included in document                |
+
+---
 ### ✅ Real-World Example: Why Custom > Default
 
 **Let’s say you want to run:**
