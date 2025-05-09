@@ -23,6 +23,7 @@
 ---
 
 ## Chapter 1: Introduction to Systems Manager (SSM)
+[Chapter 1 - Details](https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/SystemsManager/01_SSM_Introduction.md)
 
 **AWS Systems Manager (SSM)** is a central management tool for infrastructure on AWS. It allows sysadmins and DevOps teams to:
 
@@ -35,11 +36,10 @@
 
 🔍 **Why it exists**: To manage thousands of EC2 machines or hybrid nodes *without manually SSH-ing into each box*.
 
-[In Detail - Chapter 1](https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/SystemsManager/01_SSM_Introduction.md)
 ---
 
 ## Chapter 2: What Is State Manager?
-
+[Chapter 2 - Details] (https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/SystemsManager/02_StateManager_Intro.md)
 State Manager is a **declarative management tool**. Its job is to keep your EC2 instances or hybrid servers in a **desired state**.
 
 ### 🔑 Key Concept: Desired State
