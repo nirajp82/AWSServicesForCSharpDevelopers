@@ -101,8 +101,6 @@ Each step in `mainSteps` uses a **plugin**. Here are some powerful ones:
 
 ## 🛠️ 3.6: Creating Custom Documents
 
-Excellent — let’s break it down completely so you understand **why custom SSM Documents are created**, how they differ from **default (built-in) documents**, and how you use them practically.
-
 ## 🔧 **Why Create a Custom SSM Document?**
 
 AWS provides **default documents** (also called managed documents) for **common use cases**, but they don’t always match your **specific automation needs**.
