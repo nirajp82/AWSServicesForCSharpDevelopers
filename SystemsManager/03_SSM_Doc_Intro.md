@@ -130,17 +130,8 @@ AWS gives you many ready-to-use documents. A few common ones:
 
 ➡️ **You do NOT need to write these yourself**. They’re created and maintained by AWS.
 
-## 🛠 **When Custom > Default**
+## 🛠 **When You Should Use a Custom Document Instead of a Default One**
 
-Let’s say you want to:
-
-> Run `C:\Tools\mytool.exe --mode "safe" --log c:\output.txt` on your EC2 instance.
-
-### ❌ Can `AWS-RunPowerShellScript` help?
-
-Yes, but you'd have to manually pass this entire line as a parameter — and **you can’t define nice UI inputs or defaults**.
-
-### ✅ Instead: Custom Document
 
 ```json
 "parameters": {
@@ -151,22 +142,41 @@ Yes, but you'd have to manually pass this entire line as a parameter — and **y
   "mode": {
     "type": "String",
     "default": "safe"
+  },
+  "logPath": {
+    "type": "String",
+    "default": "C:\\output.txt"
   }
 }
 ```
 
-Then your PowerShell runs:
+#### ✅ PowerShell Command in `mainSteps`
 
 ```powershell
-Start-Process -FilePath $exePath -ArgumentList "--mode $mode"
+Start-Process -FilePath $exePath -ArgumentList "--mode $mode", "--log $logPath"
 ```
 
-Now you have:
+> ✅ This ensures the final command becomes exactly:
+>
+> ```powershell
+> C:\Tools\mytool.exe --mode safe --log C:\output.txt
+> ```
 
-* Reusability
-* Input defaults
-* Parameter validation
-* Integration with `CreateAssociation`, `SendCommand`, and State Manager
+---
+
+### 🔁 Why Custom > Default Here?
+
+The default `AWS-RunPowerShellScript`:
+
+* Makes you **pass the full string manually**
+* Provides **no structure or UI** for your parameters
+* Offers **no validation or reuse**
+
+Your **custom document**:
+
+* Lets you re-use across instances
+* Supports **parameter defaults**
+* Integrates with `CreateAssociation`, `SendCommand`, or `State Manager`
 
 ## 📥 How to Create One (YAML or JSON)
 
