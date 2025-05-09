@@ -297,16 +297,6 @@ public async Task CheckCommandStatusAsync(string commandId, string instanceId)
 }
 ```
 
-## 💡 Final Summary
-
-| Feature                              | Implemented In                      |
-|  | -- |
-| Reusable parameterized `.exe` call   | Custom SSM Document                 |
-| Trigger **on demand**                | `SendCommandAsync()`                |
-| Do **not wait** for `.exe` to finish | `Start-Process` (no `-Wait`)        |
-| Capture status later                 | Command ID + `GetCommandInvocation` |
-| Safe defaults                        | Included in document                |
-
 ---
 ### ✅ Real-World Example: Why Custom > Default
 
