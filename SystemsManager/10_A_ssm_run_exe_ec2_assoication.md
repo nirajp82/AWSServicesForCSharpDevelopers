@@ -112,13 +112,114 @@ Go to **SSM > Documents > Create Document**, choose **Custom**, and paste this J
 }
 ```
 
-### 🧠 What This Document Does
+Let's break this down clearly into **detailed explanations**, **code comments**, and highlight what each line of the `mainSteps` section is doing inside the SSM document.
 
-* Accepts 3 parameters (`exePath`, `param1`, `param2`) with **default values**.
-* Runs a **PowerShell** command on the target EC2 instance.
-* Starts the specified `.exe` with optional arguments.
+---
 
-If parameters are **not passed**, the **defaults** will be used automatically.
+## 🧾 `mainSteps` Section – Full Breakdown & Comments
+
+### JSON Snippet:
+
+```json
+"mainSteps": [
+  {
+    "action": "aws:runPowerShellScript",
+    "name": "runPowerShellScript",
+    "inputs": {
+      "runCommand": [
+        "$exePath = '{{ exePath }}'",
+        "$param1 = '{{ param1 }}'",
+        "$param2 = '{{ param2 }}'",
+        "Start-Process -FilePath $exePath -ArgumentList $param1, $param2"
+      ]
+    }
+  }
+]
+```
+
+---
+
+### 🧠 What this block does:
+
+* This defines a **step** that AWS SSM should perform when the document is triggered.
+* It runs a **PowerShell script** on the target EC2 instance using the `aws:runPowerShellScript` plugin.
+* The `inputs.runCommand` section is the actual PowerShell command that gets executed.
+
+---
+
+### 🔍 Line-by-line Explanation
+
+```json
+"action": "aws:runPowerShellScript",
+```
+
+* **This tells SSM to run a PowerShell script** on the instance.
+* AWS provides several plugins like `aws:runShellScript`, `aws:copyFile`, `aws:restart`, etc. Here, we’re specifically using PowerShell for Windows-based EC2.
+
+---
+
+```json
+"name": "runPowerShellScript",
+```
+
+* This is just an identifier for this step.
+* Useful when there are multiple steps in a document—you can refer to this step by name in logs or later conditions.
+
+---
+
+```json
+"inputs": {
+  "runCommand": [
+    "$exePath = '{{ exePath }}'",
+    "$param1 = '{{ param1 }}'",
+    "$param2 = '{{ param2 }}'",
+    "Start-Process -FilePath $exePath -ArgumentList $param1, $param2"
+  ]
+}
+```
+
+Let’s break down each line inside the `runCommand` array:
+
+### ✅ `$exePath = '{{ exePath }}'`
+
+* This takes the parameter named `exePath` from the **SSM document input** and assigns it to a PowerShell variable called `$exePath`.
+* Example: if `exePath = "C:\\Tools\\runme.exe"`, this line becomes:
+
+  ```powershell
+  $exePath = 'C:\Tools\runme.exe'
+  ```
+
+### ✅ `$param1 = '{{ param1 }}'`
+
+* Same idea: pulls the first argument and assigns to `$param1`.
+
+### ✅ `$param2 = '{{ param2 }}'`
+
+* Second argument for the executable.
+
+### ✅ `Start-Process -FilePath $exePath -ArgumentList $param1, $param2`
+
+* **Runs the `.exe`** located at `$exePath`, passing both parameters.
+* Equivalent to launching:
+
+  ```powershell
+  Start-Process -FilePath "C:\Tools\runme.exe" -ArgumentList "arg1", "arg2"
+  ```
+* If no parameters are passed, it uses the **default values** from the `parameters` section of the document.
+
+---
+
+## 💡 Important Notes:
+
+* You can **add more parameters** if your `.exe` needs them—just add them to the JSON document and to the `runCommand` array.
+* PowerShell will interpret this exactly as if you typed it manually into a Windows terminal on the EC2 machine.
+
+---
+
+## ✅ Benefits of This Setup
+
+* No need to SSH/RDP into instances.
+* **Default values** help avoid null reference errors if parameters aren’t passed.
 
 ---
 
@@ -149,53 +250,67 @@ public class SsmService
 
     public SsmService()
     {
-        // Initialize SSM client with default credentials and region
+        // Initialize the AWS SSM client using default credentials and region from the environment or IAM role
         _ssmClient = new AmazonSimpleSystemsManagementClient();
     }
 
     /// <summary>
-    /// Triggers the SSM document to run a .exe file on a specific EC2 instance.
+    /// Triggers execution of an SSM Association that runs a custom document on a target EC2 instance.
+    /// This document runs a .exe file with optional parameters using PowerShell.
     /// </summary>
+    /// <param name="instanceId">The EC2 instance ID where the document should be executed.</param>
+    /// <param name="exePath">Full path to the executable (optional). If null, default value from the document is used.</param>
+    /// <param name="param1">First argument to pass to the .exe (optional).</param>
+    /// <param name="param2">Second argument to pass to the .exe (optional).</param>
     public async Task CreateAssociationAndRunExeAsync(
         string instanceId,
         string exePath = null,
         string param1 = null,
         string param2 = null)
     {
+        // Define the CreateAssociationRequest, which binds the document to a specific instance and optionally overrides parameters
         var request = new CreateAssociationRequest
         {
-            Name = "RunExeFromEC2", // The name of your custom SSM document
+            // This should match the name of the custom SSM document you created in the AWS Console
+            Name = "RunExeFromEC2",
 
+            // Target a specific EC2 instance by its instance ID
             Targets = new List<AssociationTarget>
             {
                 new AssociationTarget
                 {
-                    Key = "InstanceIds", // This means you're targeting a specific EC2 instance
+                    Key = "InstanceIds", // Can also use tags if you want to target by tag instead
                     Values = new List<string> { instanceId }
                 }
             },
 
-            // Parameters to pass to the document — only override defaults if needed
+            // Optional parameters to override document defaults
             Parameters = new Dictionary<string, List<string>>()
         };
 
+        // Only include parameters if they are explicitly passed; otherwise, the SSM document's default will be used
         if (exePath != null)
             request.Parameters["exePath"] = new List<string> { exePath };
+
         if (param1 != null)
             request.Parameters["param1"] = new List<string> { param1 };
+
         if (param2 != null)
             request.Parameters["param2"] = new List<string> { param2 };
 
         try
         {
-            // This triggers execution of the SSM document on the target instance
+            // Call AWS to create the association and trigger execution of the document on the instance
+            // This is asynchronous: AWS will start running the document shortly after the association is created
             var response = await _ssmClient.CreateAssociationAsync(request);
 
+            // Output some basic information for confirmation/debugging
             Console.WriteLine("✅ Association created:");
             Console.WriteLine($"AssociationId: {response.AssociationDescription.AssociationId}");
         }
         catch (Exception ex)
         {
+            // Print the error if something goes wrong (e.g., bad instance ID, permissions issue, document doesn't exist)
             Console.WriteLine("❌ Error running SSM association: " + ex.Message);
         }
     }
