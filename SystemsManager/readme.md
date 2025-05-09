@@ -22,7 +22,7 @@
 
 ---
 
-## Chapter 1: Introduction to Systems Manager (SSM)
+## [Chapter 1: Introduction to Systems Manager (SSM)|https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/SystemsManager/01_SSM_Introduction.md]
 
 **AWS Systems Manager (SSM)** is a central management tool for infrastructure on AWS. It allows sysadmins and DevOps teams to:
 
