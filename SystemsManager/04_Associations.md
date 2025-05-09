@@ -1,8 +1,8 @@
-# 📘 Chapter 5: Deep Dive into Associations in State Manager
+# 📘 Chapter 4: Deep Dive into Associations in State Manager
 
 ---
 
-## 🧩 5.1: What Is an Association in State Manager?
+## 🧩 4.1: What Is an Association in State Manager?
 
 An **Association** is the glue between:
 
@@ -16,7 +16,7 @@ An **Association** is the glue between:
 
 ---
 
-## 🧱 5.2: Core Components of an Association
+## 🧱 4.2: Core Components of an Association
 
 | Component            | Purpose                                      | Example                         |
 | -------------------- | -------------------------------------------- | ------------------------------- |
@@ -29,7 +29,7 @@ An **Association** is the glue between:
 
 ---
 
-## 🎯 5.3: Defining Targets
+## 🎯 4.3: Defining Targets
 
 You specify **what machines** get the automation.
 
@@ -55,7 +55,7 @@ This lets you apply policies dynamically to groups of machines.
 
 ---
 
-## 🧪 5.4: Creating an Association
+## 🧪 4.4: Creating an Association
 
 ### Via AWS Console:
 
@@ -78,7 +78,7 @@ aws ssm create-association \
 
 ---
 
-## ⏰ 5.5: Scheduling with CRON Expressions
+## ⏰ 4.5: Scheduling with CRON Expressions
 
 You can schedule recurring execution using:
 
@@ -94,7 +94,7 @@ You can schedule recurring execution using:
 
 ---
 
-## 🔍 5.6: Association Compliance and Status
+## 🔍 4.6: Association Compliance and Status
 
 Each association has a **status**:
 
@@ -112,7 +112,7 @@ This is powerful for **auditing** and **policy enforcement**.
 
 ---
 
-## 📦 5.7: Using Parameter Store in Associations
+## 📦 4.7: Using Parameter Store in Associations
 
 Let’s say you want a document to restart a service, but the service name varies per environment.
 
@@ -136,7 +136,7 @@ aws ssm create-association \
 
 ---
 
-## 📁 5.8: Logging and Outputs
+## 📁 4.8: Logging and Outputs
 
 You can specify where the outputs go:
 
@@ -153,7 +153,7 @@ Additionally, you can stream logs to **CloudWatch Logs** by enabling logging in 
 
 ---
 
-## 🛡️ 5.9: IAM Permissions for Associations
+## 🛡️ 4.9: IAM Permissions for Associations
 
 To **create or run associations**, the calling identity needs:
 
@@ -173,7 +173,7 @@ The **instance profile role** also needs permission to run the SSM Document and 
 
 ---
 
-## 🌍 5.10: Global Use Case: Per-Tenant State Enforcement
+## 🌍 4.10: Global Use Case: Per-Tenant State Enforcement
 
 Imagine your architecture supports **multi-tenant workloads** (e.g., SaaS), and each tenant gets custom software or scripts.
 
