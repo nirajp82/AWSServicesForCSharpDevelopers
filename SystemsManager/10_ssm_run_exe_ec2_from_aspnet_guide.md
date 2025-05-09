@@ -83,6 +83,8 @@ Before you begin, make sure you have:
   ```bash
   Get-Service AmazonSSMAgent
   ```
+  ![image](https://github.com/user-attachments/assets/2770205f-054c-46e8-b624-d3649eb9502d)
+
 
 * **Linux EC2**: Install the SSM agent manually (if not installed):
 
