@@ -102,7 +102,7 @@ mainSteps:
 ---
 
 ## Chapter 4: Association: The Heart of State Manager
-[Chapter  - Details]()
+[Chapter  - Details](https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/SystemsManager/04_Associations.md)
 An **association** is a binding between:
 
 * a **Document**
@@ -134,7 +134,7 @@ An **association** is a binding between:
 ---
 
 ## Chapter 5: Deep Dive into Parameters
-[Chapter  - Details]()
+[Chapter  - Details](https://github.com/nirajp82/AWSServicesForCSharpDevelopers/blob/main/SystemsManager/05_ParameterStore.md)
 ### 🔍 What Are Parameters?
 
 Parameters are inputs passed into the document at runtime.
