@@ -61,7 +61,6 @@ It compares current state with the desired state you define via documents. Then 
 ---
 
 ## Chapter 3: Understanding SSM Documents
-[Chapter  - Details]()
 ### 📄 What Are SSM Documents?
 
 SSM Documents (also called **Run Command documents** or **Automation documents**) define *what actions* to perform on a target.
@@ -114,7 +113,7 @@ An **association** is a binding between:
 ### 🔁 Association Lifecycle
 
 1. Create Association with a Document.
-2. Define who it runs on (Targets).
+2. Tell AWS which EC2 instances or resources to apply this Association to.
 3. Set a schedule or event.
 4. AWS SSM enforces the document.
 5. Logs the outcome.
