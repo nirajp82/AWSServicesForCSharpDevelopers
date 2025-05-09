@@ -101,23 +101,122 @@ Each step in `mainSteps` uses a **plugin**. Here are some powerful ones:
 
 ## 🛠️ 3.6: Creating Custom Documents
 
-You can create a document via:
+Excellent — let’s break it down completely so you understand **why custom SSM Documents are created**, how they differ from **default (built-in) documents**, and how you use them practically.
 
-### AWS CLI:
+---
+
+## 🔧 **Why Create a Custom SSM Document?**
+
+AWS provides **default documents** (also called managed documents) for **common use cases**, but they don’t always match your **specific automation needs**.
+
+### ✅ You create a custom document when:
+
+| Use Case                      | Why Custom Document is Needed                                               |
+| ----------------------------- | --------------------------------------------------------------------------- |
+| 🛠 Run a `.exe` on Windows    | Default docs don’t support `.exe` execution with parameters                 |
+| 🧪 Define your own parameters | You want to **prompt users or code** for inputs (like path, flags)          |
+| 📜 Reuse custom logic         | You want to **version**, **reuse**, and **trigger** your scripts repeatedly |
+| 🔐 Add safety/logic           | Add pre-checks, error handling, logging, or conditional behavior            |
+
+---
+
+## 📄 **Default (Managed) Documents Provided by AWS**
+
+AWS gives you many ready-to-use documents. A few common ones:
+
+| Document Name             | Type       | Description                            |
+| ------------------------- | ---------- | -------------------------------------- |
+| `AWS-RunShellScript`      | Command    | Run Bash scripts on **Linux**          |
+| `AWS-RunPowerShellScript` | Command    | Run PowerShell on **Windows**          |
+| `AWS-UpdateSSMAgent`      | Command    | Update the SSM agent on instance       |
+| `AWS-ApplyPatchBaseline`  | Command    | Apply OS patches                       |
+| `AWS-ConfigureAWSPackage` | Command    | Install or uninstall software packages |
+| `AWS-StartEC2Instance`    | Automation | Start EC2 instance                     |
+| `AWS-StopEC2Instance`     | Automation | Stop EC2 instance                      |
+
+➡️ **You do NOT need to write these yourself**. They’re created and maintained by AWS.
+
+---
+
+## 🛠 **When Custom > Default**
+
+Let’s say you want to:
+
+> Run `C:\Tools\mytool.exe --mode "safe" --log c:\output.txt` on your EC2 instance.
+
+### ❌ Can `AWS-RunPowerShellScript` help?
+
+Yes, but you'd have to manually pass this entire line as a parameter — and **you can’t define nice UI inputs or defaults**.
+
+### ✅ Instead: Custom Document
+
+```json
+"parameters": {
+  "exePath": {
+    "type": "String",
+    "default": "C:\\Tools\\mytool.exe"
+  },
+  "mode": {
+    "type": "String",
+    "default": "safe"
+  }
+}
+```
+
+Then your PowerShell runs:
+
+```powershell
+Start-Process -FilePath $exePath -ArgumentList "--mode $mode"
+```
+
+Now you have:
+
+* Reusability
+* Input defaults
+* Parameter validation
+* Integration with `CreateAssociation`, `SendCommand`, and State Manager
+
+---
+
+## 📥 How to Create One (YAML or JSON)
+
+### 🔧 CLI Example (YAML File)
 
 ```bash
 aws ssm create-document \
-  --name "MyApacheInstaller" \
+  --name "MyCustomInstaller" \
   --document-type "Command" \
-  --content file://install-apache.yaml \
+  --content file://install-script.yaml \
   --document-format YAML
 ```
 
-### AWS Console:
+### 📁 Sample install-script.yaml
 
-* Go to **Systems Manager > Documents**
-* Click **Create Document**
-* Choose type and upload JSON/YAML
+```yaml
+schemaVersion: "2.2"
+description: "Install Apache HTTPD"
+parameters: {}
+mainSteps:
+  - action: aws:runShellScript
+    name: installApache
+    inputs:
+      runCommand:
+        - yum install -y httpd
+        - systemctl start httpd
+```
+
+---
+
+## 🧠 Summary
+
+| Topic                | Explanation                                                                    |
+| -------------------- | ------------------------------------------------------------------------------ |
+| **Default Document** | Prebuilt AWS-managed documents for common tasks like scripting, patching       |
+| **Custom Document**  | User-defined document to run scripts, define parameters, and customize logic   |
+| **Why Custom**       | When you need parameters, versioning, input defaults, or custom business logic |
+| **How to Create**    | Via console, CLI (`aws ssm create-document`), or SDKs                          |
+| **Document Types**   | `Command`, `Automation`, `Policy`, `Session`, `Package`                        |
+
 
 ---
 
