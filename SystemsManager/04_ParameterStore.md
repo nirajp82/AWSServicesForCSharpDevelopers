@@ -1,8 +1,8 @@
-# 📘 Chapter 4: Parameter Store and Its Role in State Manager & SSM Documents
+# 📘 Chapter 5: Parameter Store and Its Role in State Manager & SSM Documents
 
 ---
 
-## 🧭 4.1: What Is AWS Systems Manager Parameter Store?
+## 🧭 5.1: What Is AWS Systems Manager Parameter Store?
 
 Parameter Store is a **centralized configuration management** and **secret storage** service built into AWS Systems Manager.
 
@@ -12,7 +12,7 @@ Think of it as:
 
 ---
 
-## 🔑 4.2: Why Use Parameter Store?
+## 🔑 5.2: Why Use Parameter Store?
 
 | Use Case                                                  | Benefit                                            |
 | --------------------------------------------------------- | -------------------------------------------------- |
@@ -23,7 +23,7 @@ Think of it as:
 
 ---
 
-## 📂 4.3: Types of Parameters
+## 📂 5.3: Types of Parameters
 
 There are **three main types**:
 
@@ -37,7 +37,7 @@ There are **three main types**:
 
 ---
 
-## 🛠️ 4.4: Creating Parameters
+## 🛠️ 5.4: Creating Parameters
 
 ### AWS Console:
 
