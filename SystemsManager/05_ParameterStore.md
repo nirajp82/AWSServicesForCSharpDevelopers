@@ -58,7 +58,7 @@ aws ssm put-parameter \
 
 ---
 
-## 🏷️ 4.5: Naming Convention & Hierarchies
+## 🏷️ 5.5: Naming Convention & Hierarchies
 
 Parameter names can be flat or hierarchical:
 
@@ -75,7 +75,7 @@ Hierarchies help with:
 
 ---
 
-## ⚙️ 4.6: Retrieving Parameters
+## ⚙️ 5.6: Retrieving Parameters
 
 ### AWS CLI:
 
@@ -111,7 +111,7 @@ With SecureString, you can even use:
 
 ---
 
-## 🧠 4.7: Parameter Store in SSM Documents
+## 🧠 5.7: Parameter Store in SSM Documents
 
 Inside a document, **parameters** can reference values directly from Parameter Store.
 
@@ -135,7 +135,7 @@ Now the value is securely injected at runtime — no hardcoding!
 
 ---
 
-## 🔄 4.8: Parameter Store with State Manager
+## 🔄 5.8: Parameter Store with State Manager
 
 When associating a **State Manager document**, you can inject values from Parameter Store into the association:
 
@@ -156,7 +156,7 @@ This lets you:
 
 ---
 
-## 🧪 4.9: Advanced Features
+## 🧪 5.9: Advanced Features
 
 ### ❗ Expiration:
 
@@ -178,7 +178,7 @@ You can attach policies to parameters like:
 
 ---
 
-## 🔐 4.10: IAM Permissions
+## 🔐 5.10: IAM Permissions
 
 Access to Parameter Store is **strictly controlled** via IAM.
 
