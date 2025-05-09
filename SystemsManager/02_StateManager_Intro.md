@@ -99,7 +99,7 @@ A full Association JSON structure includes:
 
 ### 📌 Key Fields Breakdown:
 
-* `DocumentName`: Which document to apply
+* `DocumentName`: Which document to apply. AWS-RunShellScript - Built-in document to run shell scripts on Linux
 * `Targets`: EC2s based on tag filtering
 * `Parameters`: Values passed to the script (e.g., command arguments)
 * `ScheduleExpression`: When to apply
@@ -141,6 +141,16 @@ aws ssm list-association-compliance \
 ```
 
 This allows you to track which EC2s are **compliant** (i.e., have the desired state) and which are **non-compliant** (e.g., someone stopped the service manually).
+
+## ⚙️ How It Works Under the Hood
+
+When you create an association:
+
+1. **SSM scans for instances** that match your `Targets`.
+2. It checks if those instances have the **SSM Agent installed and online**.
+3. The association creates a job to execute the document on each matched instance.
+4. Each instance receives the document and runs it **locally** via SSM Agent.
+5. The results (stdout, stderr) are collected and stored (optionally in S3 or CloudWatch).
 
 ---
 
