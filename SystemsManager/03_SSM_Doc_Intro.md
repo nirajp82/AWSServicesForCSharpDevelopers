@@ -103,8 +103,6 @@ Each step in `mainSteps` uses a **plugin**. Here are some powerful ones:
 
 Excellent — let’s break it down completely so you understand **why custom SSM Documents are created**, how they differ from **default (built-in) documents**, and how you use them practically.
 
----
-
 ## 🔧 **Why Create a Custom SSM Document?**
 
 AWS provides **default documents** (also called managed documents) for **common use cases**, but they don’t always match your **specific automation needs**.
@@ -117,8 +115,6 @@ AWS provides **default documents** (also called managed documents) for **common 
 | 🧪 Define your own parameters | You want to **prompt users or code** for inputs (like path, flags)          |
 | 📜 Reuse custom logic         | You want to **version**, **reuse**, and **trigger** your scripts repeatedly |
 | 🔐 Add safety/logic           | Add pre-checks, error handling, logging, or conditional behavior            |
-
----
 
 ## 📄 **Default (Managed) Documents Provided by AWS**
 
@@ -135,8 +131,6 @@ AWS gives you many ready-to-use documents. A few common ones:
 | `AWS-StopEC2Instance`     | Automation | Stop EC2 instance                      |
 
 ➡️ **You do NOT need to write these yourself**. They’re created and maintained by AWS.
-
----
 
 ## 🛠 **When Custom > Default**
 
@@ -176,8 +170,6 @@ Now you have:
 * Parameter validation
 * Integration with `CreateAssociation`, `SendCommand`, and State Manager
 
----
-
 ## 📥 How to Create One (YAML or JSON)
 
 ### 🔧 CLI Example (YAML File)
@@ -205,8 +197,6 @@ mainSteps:
         - systemctl start httpd
 ```
 
----
-
 ## 🧠 Summary
 
 | Topic                | Explanation                                                                    |
@@ -216,7 +206,6 @@ mainSteps:
 | **Why Custom**       | When you need parameters, versioning, input defaults, or custom business logic |
 | **How to Create**    | Via console, CLI (`aws ssm create-document`), or SDKs                          |
 | **Document Types**   | `Command`, `Automation`, `Policy`, `Session`, `Package`                        |
-
 
 ---
 
