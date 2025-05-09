@@ -135,79 +135,47 @@ Perfect — here's a **complete and clean rewrite** that brings all your element
 ---
 ## 🧾 **Custom SSM Document with Logging, Exit Code, and Error Capture**
 
-* Waits for the process to complete using `-Wait`.
-* Captures standard output and standard error to a file.
-* Handles exit codes for success/failure reporting.
-* Includes **detailed comments** in both JSON and .NET code.
+* **trigger** the `.exe` via a custom SSM document,
+* **return immediately** with the Command ID,
+* and later **check status** using that ID,
+
+then here's the **clean, non-blocking version** of the setup:
+
+## ✅ Updated Custom SSM Document (No `Wait`, No Output Capture)
 
 ```json
 {
   "schemaVersion": "2.2",
-  "description": "Run a Windows .exe with parameters, capture output and exit status.",
+  "description": "Fire-and-forget execution of an exe with params on EC2",
   "parameters": {
     "exePath": {
       "type": "String",
-      "description": "Full path to the .exe file",
+      "description": "Path to the exe",
       "default": "C:\\Tools\\mytool.exe"
     },
     "mode": {
       "type": "String",
-      "description": "Mode parameter to pass (e.g., safe, fast)",
+      "description": "Mode argument",
       "default": "safe"
     },
     "logPath": {
       "type": "String",
-      "description": "Path to write tool logs",
+      "description": "Log output path",
       "default": "C:\\output.txt"
-    },
-    "outPath": {
-      "type": "String",
-      "description": "Standard output file path",
-      "default": "C:\\stdout.txt"
-    },
-    "errPath": {
-      "type": "String",
-      "description": "Standard error file path",
-      "default": "C:\\stderr.txt"
     }
   },
   "mainSteps": [
     {
       "action": "aws:runPowerShellScript",
-      "name": "runExecutableWithLogging",
+      "name": "runExe",
       "inputs": {
         "runCommand": [
           "$exePath = '{{ exePath }}'",
           "$mode = '{{ mode }}'",
           "$logPath = '{{ logPath }}'",
-          "$outPath = '{{ outPath }}'",
-          "$errPath = '{{ errPath }}'",
 
-          # Start the process and capture output and error
-          "$processInfo = New-Object System.Diagnostics.ProcessStartInfo",
-          "$processInfo.FileName = $exePath",
-          "$processInfo.Arguments = \"--mode $mode --log $logPath\"",
-          "$processInfo.RedirectStandardOutput = $true",
-          "$processInfo.RedirectStandardError = $true",
-          "$processInfo.UseShellExecute = $false",
-          "$processInfo.CreateNoWindow = $true",
-
-          "$process = New-Object System.Diagnostics.Process",
-          "$process.StartInfo = $processInfo",
-          "$process.Start() | Out-Null",
-
-          "$stdOut = $process.StandardOutput.ReadToEnd()",
-          "$stdErr = $process.StandardError.ReadToEnd()",
-
-          "$process.WaitForExit()",
-
-          # Write output to files
-          "Set-Content -Path $outPath -Value $stdOut",
-          "Set-Content -Path $errPath -Value $stdErr",
-
-          # Return exit code (SSM logs it)
-          "Write-Output \"Exit Code: $($process.ExitCode)\"",
-          "if ($process.ExitCode -ne 0) { exit $process.ExitCode }"
+          # Fire and forget — no waiting, no capture
+          "Start-Process -FilePath $exePath -ArgumentList \"--mode $mode\", \"--log $logPath\""
         ]
       }
     }
@@ -215,8 +183,7 @@ Perfect — here's a **complete and clean rewrite** that brings all your element
 }
 ```
 
-
-## 💻 .NET Code to Run the Above SSM Document
+## 💻 .NET Code to Send Command and Return `CommandId`
 
 ```csharp
 using Amazon.SimpleSystemsManagement;
@@ -225,67 +192,158 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class SsmExecutor
+public class SsmCommandSender
 {
     private readonly IAmazonSimpleSystemsManagement _ssm;
 
-    public SsmExecutor()
+    public SsmCommandSender()
     {
-        // Uses AWS credentials from environment, IAM role, or SDK default chain
+        // Initializes SSM client using default credential chain
         _ssm = new AmazonSimpleSystemsManagementClient();
     }
 
     /// <summary>
-    /// Sends a command to the target EC2 instance to run a .exe file with parameters.
-    /// Captures stdout, stderr, and exit code.
+    /// Sends a command to run an .exe with params on EC2. Returns the Command ID immediately.
     /// </summary>
-    public async Task RunExecutableAsync(string instanceId)
+    public async Task<string> RunExecutableAsync(string instanceId)
     {
         var request = new SendCommandRequest
         {
-            DocumentName = "RunExeWithLoggingAndExitCheck", // Replace with your SSM document name
+            DocumentName = "RunExeWithoutWait", // Replace with your document's name
             InstanceIds = new List<string> { instanceId },
-            Comment = "Run tool.exe with logging and error capture",
 
-            // Parameters to pass to the custom document
+            // Optional: helpful label for auditing
+            Comment = "Trigger .exe tool run (non-blocking)",
+
             Parameters = new Dictionary<string, List<string>>
             {
                 { "exePath", new List<string> { "C:\\Tools\\mytool.exe" } },
                 { "mode", new List<string> { "safe" } },
-                { "logPath", new List<string> { "C:\\tool-logs\\log.txt" } },
-                { "outPath", new List<string> { "C:\\tool-logs\\stdout.txt" } },
-                { "errPath", new List<string> { "C:\\tool-logs\\stderr.txt" } }
+                { "logPath", new List<string> { "C:\\output.txt" } }
             }
         };
 
         try
         {
             var response = await _ssm.SendCommandAsync(request);
-            Console.WriteLine($"✅ Command sent. Command ID: {response.Command.CommandId}");
+            var commandId = response.Command.CommandId;
 
-            // Optional: poll GetCommandInvocationAsync to check for success/failure
+            Console.WriteLine($"✅ Command sent successfully. Command ID: {commandId}");
+            return commandId;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Failed to send command: {ex.Message}");
+            Console.WriteLine($"❌ Error sending command: {ex.Message}");
+            throw;
         }
     }
 }
 ```
-##### 📌 Summary of Enhancements
 
-| Feature            | Description                                                                |
-| ------------------ | -------------------------------------------------------------------------- |
-| `-Wait`            | Ensures the command completes before moving on                             |
-| `stdout`, `stderr` | Captured and saved to files (`outPath`, `errPath`)                         |
-| Exit Code Handling | Returns non-zero codes to SSM, enabling failure detection                  |
-| Parameterization   | You can override any input (`exePath`, `mode`, `logPath`, etc.) at runtime |
+## 🧪 Later: Check Status Using `CommandId`
 
+To monitor progress/status, you can call:
 
+```csharp
+var result = await _ssm.GetCommandInvocationAsync(new GetCommandInvocationRequest
+{
+    CommandId = commandId,
+    InstanceId = instanceId
+});
+Console.WriteLine($"Status: {result.Status}, Exit Code: {result.ResponseCode}");
+```
+
+### ✅ Summary
+
+| Feature               | Behavior                                  |
+| --------------------- | ----------------------------------------- |
+| `Start-Process`       | Fire-and-forget (`-NoNewWindow` not used) |
+| No `Wait`             | Does **not** block on execution           |
+| Returns `CommandId`   | So you can track execution later          |
+| No output/error files | Keeps it lightweight                      |
 
 ## 🛠 **When You Should Use a Custom Document Instead of a Default One**
 
+Here’s a clear and practical breakdown of **🛠 When You Should Use a Custom SSM Document Instead of a Default Managed One** like `AWS-RunPowerShellScript` or `AWS-RunShellScript`:
 
+---
+
+### 🔧 Default Managed Documents Are Great When:
+
+| Situation                                                            | Why They Work                                                                             |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| You want to run **basic shell or PowerShell scripts**                | `AWS-RunShellScript` or `AWS-RunPowerShellScript` let you pass raw script lines directly. |
+| You **don’t need parameter UI**, input validation, or default values | Defaults don’t support structured input — you pass raw text only.                         |
+| You’re okay with **manually constructing commands**                  | You have to build the full command-line yourself and pass it as a string.                 |
+| You’re doing **one-off troubleshooting or automation**               | These documents are easy to use from the console or API.                                  |
+
+---
+
+### 🛠 You Should Use a **Custom Document** When:
+
+| Situation                                                                                  | Why Custom Docs Are Better                                              |
+| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| ✅ You want to reuse logic with **different parameters**                                    | Define named parameters like `exePath`, `mode`, etc., and reuse easily. |
+| ✅ You want to provide a **UI with input fields** in the AWS Console                        | Custom documents allow parameter UI in the SSM Console.                 |
+| ✅ You want to set **defaults and validations** (e.g., required fields, allowed values)     | Great for safety and DRY automation.                                    |
+| ✅ You want to avoid **shell-escaping or string-building manually**                         | Instead of building a big quoted string, parameters are passed cleanly. |
+| ✅ You need **clean integration** with `CreateAssociation`, `SendCommand`, or State Manager | Custom documents are treated as reusable objects.                       |
+
+---
+
+### ✅ Real-World Example: Why Custom > Default
+
+**Let’s say you want to run:**
+
+```powershell
+C:\Tools\mytool.exe --mode safe --log C:\output.txt
+```
+
+With **`AWS-RunPowerShellScript`**, you'd need to send:
+
+```json
+"commands": [ "Start-Process -FilePath 'C:\\Tools\\mytool.exe' -ArgumentList '--mode safe', '--log C:\\output.txt'" ]
+```
+
+⚠️ That works, **but:**
+
+* No default values
+* No structured input
+* Hard to validate
+* Repetitive boilerplate
+
+### ✅ With a **Custom Document**:
+
+```json
+"parameters": {
+  "exePath": { "type": "String", "default": "C:\\Tools\\mytool.exe" },
+  "mode": { "type": "String", "default": "safe" },
+  "logPath": { "type": "String", "default": "C:\\output.txt" }
+}
+```
+
+Then in your script:
+
+```powershell
+Start-Process -FilePath $exePath -ArgumentList "--mode $mode", "--log $logPath"
+```
+
+💡 **You now have:**
+
+* Input UI for humans
+* Default values
+* Cleaner scripts
+* Easy versioning and reuse
+
+### 📌 Summary:
+
+| Feature                                 | Default Doc       | Custom Doc         |
+| --------------------------------------- | ----------------- | ------------------ |
+| Parameter UI in console                 | ❌ No              | ✅ Yes              |
+| Default values                          | ❌ No              | ✅ Yes              |
+| Input validation                        | ❌ No              | ✅ Yes              |
+| Easy reuse with SendCommand/Association | ⚠️ Manual         | ✅ Structured       |
+| Clean shell logic                       | ❌ Escaped strings | ✅ Native variables |
 
 ### 🔁 Why Custom > Default Here?
 
