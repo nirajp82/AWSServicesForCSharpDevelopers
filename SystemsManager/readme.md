@@ -61,7 +61,7 @@ It compares current state with the desired state you define via documents. Then 
 ---
 
 ## Chapter 3: Understanding SSM Documents
-
+[Chapter  - Details]()
 ### 📄 What Are SSM Documents?
 
 SSM Documents (also called **Run Command documents** or **Automation documents**) define *what actions* to perform on a target.
@@ -102,7 +102,7 @@ mainSteps:
 ---
 
 ## Chapter 4: Association: The Heart of State Manager
-
+[Chapter  - Details]()
 An **association** is a binding between:
 
 * a **Document**
@@ -134,7 +134,7 @@ An **association** is a binding between:
 ---
 
 ## Chapter 5: Deep Dive into Parameters
-
+[Chapter  - Details]()
 ### 🔍 What Are Parameters?
 
 Parameters are inputs passed into the document at runtime.
@@ -166,7 +166,7 @@ Then the parameter `message` must be provided.
 ---
 
 ## Chapter 6: Target Selection in Associations
-
+[Chapter  - Details]()
 ### 🎯 Targets Can Be:
 
 * Specific instance IDs (`i-xxxx`)
@@ -189,7 +189,7 @@ Any EC2 tagged with `App=WebServer` becomes a target without changing the associ
 ---
 
 ## Chapter 7: Scheduling and Automation
-
+[Chapter  - Details]()
 ### ⏰ Supported Schedule Types
 
 * `rate()` expressions: `rate(1 hour)`, `rate(1 day)`
@@ -205,7 +205,7 @@ Schedule makes the State Manager *self-healing* by retrying if an instance was o
 ---
 
 ## Chapter 8: Logging and Compliance Tracking
-
+[Chapter  - Details]()
 ### 🪵 Logging Options
 
 * **S3**: Stores raw output logs
@@ -223,7 +223,7 @@ Use AWS Config + Systems Manager to enforce compliance rules organization-wide.
 ---
 
 ## Chapter 9: Custom SSM Documents
-
+[Chapter  - Details]()
 ### ✨ Why Create Custom Documents?
 
 * Default documents too generic
@@ -256,7 +256,7 @@ aws ssm create-document \
 ---
 
 ## Chapter 10: Security & IAM Roles
-
+[Chapter  - Details]()
 ### 📜 Required Roles
 
 * **EC2 IAM Role** → Must have `AmazonSSMManagedInstanceCore`
@@ -273,7 +273,7 @@ You can **share custom documents**:
 ---
 
 ## Chapter 11: Advanced Use Cases
-
+[Chapter  - Details]()
 ### 🧠 Use Case 1: Enforce Configuration Drift Control
 
 Run a script daily that checks if `/etc/myapp/config.yml` contains correct values.
@@ -289,7 +289,7 @@ Write a shell script that checks services, reports via CloudWatch.
 ---
 
 ## Chapter 12: Real-World Examples
-
+[Chapter  - Details]()
 ### ✅ Example: Patch Linux Machines Daily
 
 ```json
@@ -307,7 +307,7 @@ Use CloudWatch Event → triggers Association → runs restart script.
 ---
 
 ## Chapter 13: Troubleshooting and Monitoring
-
+[Chapter  - Details]()
 ### 🔎 Where to Check
 
 1. **SSM Agent Logs**:
@@ -329,7 +329,7 @@ Use CloudWatch Event → triggers Association → runs restart script.
 ---
 
 ## Chapter 14: Best Practices and Optimization
-
+[Chapter  - Details]()
 * Use tag-based targeting for dynamic scaling.
 * Enable logging for audit/compliance needs.
 * Combine with AWS Config for remediation workflows.
@@ -339,7 +339,7 @@ Use CloudWatch Event → triggers Association → runs restart script.
 ---
 
 ## Chapter 15: Final Thoughts and Resources
-
+[Chapter  - Details]()
 ### 📚 Key AWS Docs:
 
 * [SSM State Manager Official Guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-state.html)
