@@ -1,7 +1,3 @@
-Awesome! Now we’re stepping into the **heart of automation** with **SSM Documents** — these are what actually tell AWS Systems Manager *what to do*. Whether it's running a shell command, setting up a service, or orchestrating complex workflows — **Documents** are the engine.
-
----
-
 # 📘 Chapter 3: Understanding SSM Documents in Depth
 
 ---
